@@ -5,37 +5,28 @@ public class CameraController2D : MonoBehaviour
 {
     [Header("Target")]
     [SerializeField] PlayerController2D target;
-    [Tooltip("Where the camera looks, relative to the player.")]
     [SerializeField] Vector2 offset = new Vector2(0f, 1f);
 
     [Header("Follow")]
     [SerializeField] float horizontalSmoothTime = 0.35f;
     [SerializeField] float verticalSmoothTime = 0.6f;
-    [Tooltip("How far ahead the camera looks in the direction the player runs.")]
     [SerializeField] float lookAhead = 1.5f;
     [SerializeField] float lookAheadSmoothTime = 1.5f;
-    [Tooltip("Jumps up to this height above the last ground don't move the camera, so it doesn't bob on every jump.")]
     [SerializeField] float jumpFollowHeight = 4f;
-    [Tooltip("The camera catches up faster as the player gets near this share of the screen, and never lets them go further.")]
     [SerializeField, Range(0.2f, 1f)] float safeArea = 0.8f;
 
     [Header("Fall")]
-    [Tooltip("Falling this deep below the last ground counts as a long fall: the camera looks down and zooms out.")]
     [SerializeField] float longFallDistance = 8f;
     [SerializeField] float fallLookAhead = 1.5f;
 
     [Header("Zoom")]
-    [Tooltip("Orthographic size outside camera zones (half of the visible height, in units).")]
     [SerializeField, Min(0.1f)] float size = 8f;
-    [Tooltip("0.1 = you see 10 % more while moving.")]
     [SerializeField, Range(0f, 1f)] float runZoomOut = 0f;
-    [Tooltip("0.1 = you see 10 % more during a long fall.")]
     [SerializeField, Range(0f, 1f)] float fallZoomOut = 0.1f;
     [SerializeField] float zoomOutTime = 1.2f;
     [SerializeField] float zoomInTime = 2f;
 
     [Header("Bounds")]
-    [Tooltip("Optional. A BoxCollider2D around the whole level; the camera never shows anything outside it.")]
     [SerializeField] BoxCollider2D levelBounds = null;
 
     const float MoveThreshold = 1f;

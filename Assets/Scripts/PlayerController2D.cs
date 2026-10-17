@@ -9,25 +9,18 @@ public class PlayerController2D : MonoBehaviour
     [SerializeField] InputActionReference jumpAction = null;
 
     [Header("Collision")]
-    [Tooltip("Layer of your tilemap (floor and walls).")]
     [SerializeField] LayerMask groundLayer;
-    [Tooltip("Steepest slope (degrees) we can walk on. Steeper surfaces count as walls.")]
     [SerializeField, Range(0f, 89f)] float maxSlopeAngle = 50f;
 
     [Header("Run")]
     [SerializeField] float maxSpeed = 8f;
-    [Tooltip("How fast we speed up, slow down and turn around (units/s²).")]
     [SerializeField] float acceleration = 90f;
-    [Tooltip("Share of the acceleration we keep in the air.")]
     [SerializeField, Range(0f, 1f)] float airControl = 0.65f;
 
     [Header("Jump")]
-    [Tooltip("Height of a full jump in units (= tiles).")]
     [SerializeField] float jumpHeight = 3.2f;
-    [Tooltip("Seconds to reach the top of a full jump.")]
     [SerializeField] float timeToApex = 0.4f;
     [SerializeField] float fallGravityMultiplier = 2f;
-    [Tooltip("Upward speed is multiplied by this when jump is released early.")]
     [SerializeField, Range(0f, 1f)] float jumpCutMultiplier = 0.5f;
     [SerializeField] float maxFallSpeed = 18f;
 
@@ -36,20 +29,20 @@ public class PlayerController2D : MonoBehaviour
     [SerializeField] float airJumpHeight = 2.5f;
 
     [Header("Wall")]
-    [Tooltip("Max fall speed while sliding down a wall.")]
     [SerializeField] float wallSlideSpeed = 3f;
-    [Tooltip("Horizontal speed of a wall jump, away from the wall.")]
     [SerializeField] float wallJumpPushSpeed = 11f;
-    [Tooltip("Seconds after a wall jump until full air control is back.")]
     [SerializeField] float wallJumpControlTime = 0.2f;
 
     [Header("Assists")]
     [SerializeField] float coyoteTime = 0.1f;
     [SerializeField] float jumpBufferTime = 0.1f;
-    [Tooltip("Max distance we get nudged around a ceiling corner we hit with our head.")]
     [SerializeField] float cornerCorrection = 0.25f;
-    [Tooltip("Small bumps up to this height are stepped over while walking (e.g. jagged tile colliders).")]
     [SerializeField] float maxStepHeight = 0.15f;
+
+    [SerializeField] SpriteRenderer current_sprite;
+    [SerializeField] Sprite spunt_test_default;
+    [SerializeField] Sprite spunt_test_left;
+    [SerializeField] Sprite spunt_test_right;
 
     public bool IsGrounded => isGrounded;
     public bool IsWallSliding => isWallSliding;
@@ -118,6 +111,22 @@ public class PlayerController2D : MonoBehaviour
     {
         float x = moveAction.action.ReadValue<Vector2>().x;
         moveInput = Mathf.Abs(x) < StickDeadZone ? 0f : Mathf.Sign(x);
+
+
+        if (moveInput == 0f)
+        {
+            current_sprite.sprite = spunt_test_default;
+        } 
+        else if (moveInput < 0f)
+        {
+            current_sprite.sprite = spunt_test_left;
+        }
+        else
+        {
+            current_sprite.sprite = spunt_test_right;
+        }
+
+
         jumpHeld = jumpAction.action.IsPressed();
         if (jumpAction.action.WasPressedThisFrame())
             lastJumpPressedTime = Time.time;
