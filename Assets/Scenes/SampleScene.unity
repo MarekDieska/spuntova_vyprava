@@ -1557,12 +1557,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0cd44c1031e13a943bb63640046fad76, type: 3}
   m_Name: 
   m_EditorClassIdentifier: UnityEngine.UI::UnityEngine.UI.CanvasScaler
-  m_UiScaleMode: 0
+  m_UiScaleMode: 1
   m_ReferencePixelsPerUnit: 100
   m_ScaleFactor: 1
-  m_ReferenceResolution: {x: 800, y: 600}
+  m_ReferenceResolution: {x: 1920, y: 1080}
   m_ScreenMatchMode: 0
-  m_MatchWidthOrHeight: 0
+  m_MatchWidthOrHeight: 0.5
   m_PhysicalUnit: 3
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
@@ -29640,15 +29640,8 @@ MonoBehaviour:
   close:
   - {fileID: -2351484988533484620, guid: 4d541a7b8aa3d6647aa902ff0d739eeb, type: 3}
   - {fileID: -4255296901430695020, guid: 82e37c1c38ef5834e84e0d8e9cd19fc0, type: 3}
-  flowerBaseOffset: -3
   veryClose: {fileID: -4143547664420626969, guid: 0fe944f7f68017c4ab38863741eaecbd, type: 3}
   lowestLevelY: -4.757
-  foregroundScreenShare: 0.2
-  foregroundTopOffset: 0.3
-  foregroundScale: 1.4
-  foregroundLowering: 0.4
-  verticalFollow: 0.95
-  startBelowCamera: 10
 --- !u!1 &2067545069
 GameObject:
   m_ObjectHideFlags: 0
