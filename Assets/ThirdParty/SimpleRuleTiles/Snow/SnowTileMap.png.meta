@@ -1,9 +1,16 @@
 fileFormatVersion: 2
-guid: 85893a29b9939374faeb4903d966a589
+guid: 7899534f1ab1095418f56159c3ee11c0
+AssetOrigin:
+  serializedVersion: 1
+  productId: 283698
+  packageName: Simple Rule Tiles
+  packageVersion: 1.1
+  assetPath: Assets/SimpleRuleTiles/Snow/SnowTileMap.png
+  uploadId: 666033
 TextureImporter:
   internalIDToNameTable: []
   externalObjects: {}
-  serializedVersion: 12
+  serializedVersion: 13
   mipmaps:
     mipMapMode: 0
     enableMipMap: 0
@@ -67,7 +74,7 @@ TextureImporter:
   swizzle: 50462976
   cookieLightType: 0
   platformSettings:
-  - serializedVersion: 3
+  - serializedVersion: 4
     buildTarget: DefaultTexturePlatform
     maxTextureSize: 2048
     resizeAlgorithm: 0
@@ -80,7 +87,7 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 3
+  - serializedVersion: 4
     buildTarget: WebGL
     maxTextureSize: 2048
     resizeAlgorithm: 0
@@ -93,7 +100,7 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 3
+  - serializedVersion: 4
     buildTarget: Standalone
     maxTextureSize: 2048
     resizeAlgorithm: 0
@@ -106,8 +113,8 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 3
-    buildTarget: iPhone
+  - serializedVersion: 4
+    buildTarget: iOS
     maxTextureSize: 2048
     resizeAlgorithm: 0
     textureFormat: -1
@@ -119,7 +126,7 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 3
+  - serializedVersion: 4
     buildTarget: Android
     maxTextureSize: 2048
     resizeAlgorithm: 0
@@ -132,7 +139,7 @@ TextureImporter:
     ignorePlatformSupport: 0
     androidETC2FallbackOverride: 0
     forceMaximumCompressionQuality_BC6H_BC7: 0
-  - serializedVersion: 3
+  - serializedVersion: 4
     buildTarget: Server
     maxTextureSize: 2048
     resizeAlgorithm: 0
@@ -149,7 +156,7 @@ TextureImporter:
     serializedVersion: 2
     sprites:
     - serializedVersion: 2
-      name: GrassTileMap_0
+      name: SnowTileMap_0
       rect:
         serializedVersion: 2
         x: 0
@@ -159,18 +166,19 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 20805cd03b38adc4595d4c56acdccef0
-      internalID: 1589209162
+      spriteID: 49374444387320048a246a02c8a585bd
+      internalID: -2029417509
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: GrassTileMap_1
+      name: SnowTileMap_1
       rect:
         serializedVersion: 2
         x: 32
@@ -180,18 +188,19 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e4d38866b78031e4792c7df966b8ba60
-      internalID: -256437696
+      spriteID: ddde7a19ab981af4b8d86debc6c7bb45
+      internalID: -864773296
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: GrassTileMap_2
+      name: SnowTileMap_2
       rect:
         serializedVersion: 2
         x: 64
@@ -201,18 +210,19 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: cb4ecd6bd68b23c45b5342c391d5fa9c
-      internalID: -1960347807
+      spriteID: 4ea918c7fed601b4fa796284162284b0
+      internalID: -419517007
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: GrassTileMap_3
+      name: SnowTileMap_3
       rect:
         serializedVersion: 2
         x: 96
@@ -222,18 +232,19 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e7ae3c20710b8994f82658ef251d9a60
-      internalID: -1127604392
+      spriteID: 2531b9be4d2f4664aa5f2a13f0680c45
+      internalID: -970351661
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: GrassTileMap_4
+      name: SnowTileMap_4
       rect:
         serializedVersion: 2
         x: 128
@@ -243,18 +254,19 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b66bdbebd9b86014689062f2533269d9
-      internalID: -1572072983
+      spriteID: d4e5a8001bcf1f84b9b4180c18989bf8
+      internalID: 1906745350
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: GrassTileMap_5
+      name: SnowTileMap_5
       rect:
         serializedVersion: 2
         x: 160
@@ -264,18 +276,19 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 3058cd8cc2bd9f244ad6807b328f5085
-      internalID: 1905314444
+      spriteID: 5450468192b690b4b9ec578402d84310
+      internalID: 668566487
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: GrassTileMap_6
+      name: SnowTileMap_6
       rect:
         serializedVersion: 2
         x: 192
@@ -285,18 +298,19 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 39f3c0896e6f20040b87bb32eb4a2273
-      internalID: -1052201673
+      spriteID: 65dba92bb47925d43b31402bdecb6aed
+      internalID: -1747042729
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: GrassTileMap_7
+      name: SnowTileMap_7
       rect:
         serializedVersion: 2
         x: 0
@@ -306,18 +320,19 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 9c1ba851227885f4f8f9a7ed9214111d
-      internalID: -1169406595
+      spriteID: fe02c48ad2683a04ab4bb0a3f0e6ce50
+      internalID: -1816988909
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: GrassTileMap_8
+      name: SnowTileMap_8
       rect:
         serializedVersion: 2
         x: 32
@@ -327,18 +342,19 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 652eb2e4b37e49a49bd2d67ccd304249
-      internalID: 175720932
+      spriteID: b66f813631a48014e8a434d31ac3a969
+      internalID: 43384827
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: GrassTileMap_9
+      name: SnowTileMap_9
       rect:
         serializedVersion: 2
         x: 64
@@ -348,18 +364,19 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: bfe699b1507cda84cb7d7030437be2d9
-      internalID: -1176300094
+      spriteID: 069ddfee0e6149b489b58f41eacb48ff
+      internalID: 1579392790
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: GrassTileMap_10
+      name: SnowTileMap_10
       rect:
         serializedVersion: 2
         x: 96
@@ -369,18 +386,19 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: b575a9396722b1b40aecc1ce3803a23d
-      internalID: -1088661518
+      spriteID: 71eeba0695a5e4340ac20bbfebc8c269
+      internalID: 1282119772
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: GrassTileMap_11
+      name: SnowTileMap_11
       rect:
         serializedVersion: 2
         x: 128
@@ -390,18 +408,19 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 2ea4fd1ca7165ae4bbd1a8f6fc1339c2
-      internalID: -2095808464
+      spriteID: 6d3cf709bd0bc0d40abc3c785451c55a
+      internalID: 2019650856
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: GrassTileMap_12
+      name: SnowTileMap_12
       rect:
         serializedVersion: 2
         x: 160
@@ -411,18 +430,19 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: db3a5a0d5158d2345affef770a849a26
-      internalID: 237623493
+      spriteID: db218848bd3782a4198d1aa285b4b4d9
+      internalID: -1712529641
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: GrassTileMap_13
+      name: SnowTileMap_13
       rect:
         serializedVersion: 2
         x: 192
@@ -432,18 +452,19 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 81d1f3fa0dba14146b3ca396d09ad586
-      internalID: -604976277
+      spriteID: 9d2fdb22f1272f94ba0e2f36d2f19b8c
+      internalID: 1103496840
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: GrassTileMap_14
+      name: SnowTileMap_14
       rect:
         serializedVersion: 2
         x: 0
@@ -453,18 +474,19 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 84d055ff8c424c943a28a6387a7dc533
-      internalID: -1020889536
+      spriteID: 5a80d5788aeb6714a917ea546e5a8c78
+      internalID: -1264529531
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: GrassTileMap_15
+      name: SnowTileMap_15
       rect:
         serializedVersion: 2
         x: 32
@@ -474,18 +496,19 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 15ea152dea2b24e45903d49d89c4f503
-      internalID: 1759062274
+      spriteID: 112a08eea1d15de42975eb495a47cf5b
+      internalID: -715371312
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: GrassTileMap_16
+      name: SnowTileMap_16
       rect:
         serializedVersion: 2
         x: 64
@@ -495,18 +518,19 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 8210a68d3228c2d458f116127b9d4800
-      internalID: 624316565
+      spriteID: 52d6686881f92194991119a2a4250867
+      internalID: 737258566
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: GrassTileMap_17
+      name: SnowTileMap_17
       rect:
         serializedVersion: 2
         x: 96
@@ -516,18 +540,19 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 96ed3d62516d1044584d3c3e9f605cf7
-      internalID: -68039432
+      spriteID: c49643f574343ec428076f825f0e57fc
+      internalID: 857311052
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: GrassTileMap_18
+      name: SnowTileMap_18
       rect:
         serializedVersion: 2
         x: 128
@@ -537,18 +562,19 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: deeabc0d7404f2d4096546bb73a0fc6b
-      internalID: 621791385
+      spriteID: b76565bf25168ea46b8c494343bce69a
+      internalID: -1107613049
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: GrassTileMap_19
+      name: SnowTileMap_19
       rect:
         serializedVersion: 2
         x: 160
@@ -558,18 +584,19 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 6b896b26e8b5f1c44a48598f20d03c3c
-      internalID: -1069940154
+      spriteID: 00086199b3241b54ba33aa0b1382743a
+      internalID: 453623541
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: GrassTileMap_20
+      name: SnowTileMap_20
       rect:
         serializedVersion: 2
         x: 192
@@ -579,18 +606,19 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 1c5ff111faff942499be28e5577a6eeb
-      internalID: -870895246
+      spriteID: 9941cf663358f9a48b3fa36eca9a2f23
+      internalID: 1966073890
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: GrassTileMap_21
+      name: SnowTileMap_21
       rect:
         serializedVersion: 2
         x: 0
@@ -600,18 +628,19 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: fd7c8ff3c88bb194c8c57eaf8f672fa4
-      internalID: -1575680469
+      spriteID: 441f308ba93dcc04ca3dc7b4340e3b17
+      internalID: -1804436175
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: GrassTileMap_22
+      name: SnowTileMap_22
       rect:
         serializedVersion: 2
         x: 32
@@ -621,18 +650,19 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 506cf1fb9ada7084bb8f37d06f6eee51
-      internalID: -1129913567
+      spriteID: 7f73c50e361fd2a48ba6751c8858fffb
+      internalID: -1354517576
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: GrassTileMap_23
+      name: SnowTileMap_23
       rect:
         serializedVersion: 2
         x: 64
@@ -642,18 +672,19 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 8e5f369018572394ca34afaa6818ecad
-      internalID: 996938691
+      spriteID: 9f310224919207e428387a96da00cd60
+      internalID: -1100844389
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: GrassTileMap_24
+      name: SnowTileMap_24
       rect:
         serializedVersion: 2
         x: 96
@@ -663,18 +694,19 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 7e2987f045fc90f4ea89b7bee06509e7
-      internalID: 492438439
+      spriteID: d8a5c4ef279264447a7a74b5594f7261
+      internalID: -1247946419
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: GrassTileMap_25
+      name: SnowTileMap_25
       rect:
         serializedVersion: 2
         x: 128
@@ -684,18 +716,19 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 8cc015cd10c772e4095280c74ab6c071
-      internalID: -917824411
+      spriteID: 9a69c0cc375733b4096f9bfe12a127b2
+      internalID: 1887802759
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: GrassTileMap_26
+      name: SnowTileMap_26
       rect:
         serializedVersion: 2
         x: 160
@@ -705,18 +738,19 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 182e57ecae959eb4c81d5841eb7f00d6
-      internalID: -1854445451
+      spriteID: dc7d11b50c6a80942b74dcc90a093375
+      internalID: 1229117147
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: GrassTileMap_27
+      name: SnowTileMap_27
       rect:
         serializedVersion: 2
         x: 192
@@ -726,18 +760,19 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 5e39c15bbb26e744c91fae7ddf455b7c
-      internalID: -2142202101
+      spriteID: 11a6e52ced696954aabe03508e39786b
+      internalID: -170919103
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: GrassTileMap_28
+      name: SnowTileMap_28
       rect:
         serializedVersion: 2
         x: 0
@@ -747,18 +782,19 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: a6b55300e6e1abc47b214e602de514ac
-      internalID: -257451651
+      spriteID: eedd62f5ed20dab439d1fd2b69a2e421
+      internalID: 1262109289
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: GrassTileMap_29
+      name: SnowTileMap_29
       rect:
         serializedVersion: 2
         x: 32
@@ -768,18 +804,19 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: fd7a9294dbf0ba14a9fc098e97d04a3b
-      internalID: -1866437147
+      spriteID: 6363d9a99fa876c479628fa3004cfa62
+      internalID: -429880292
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: GrassTileMap_30
+      name: SnowTileMap_30
       rect:
         serializedVersion: 2
         x: 64
@@ -789,18 +826,19 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: d70c336b8ee69ef41965adeb86d7bc52
-      internalID: 192315924
+      spriteID: 46b986ac54f38fa49abef37f660670f8
+      internalID: -980319806
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: GrassTileMap_31
+      name: SnowTileMap_31
       rect:
         serializedVersion: 2
         x: 96
@@ -810,18 +848,19 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 22c625dd20375f24bb44b0f4706a7db2
-      internalID: -901478912
+      spriteID: 3626c27305f7b3f46b5e14fc101cea0c
+      internalID: 7197624
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: GrassTileMap_32
+      name: SnowTileMap_32
       rect:
         serializedVersion: 2
         x: 128
@@ -831,18 +870,19 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 0f23c14709413ff4093f8cd527be5adf
-      internalID: -1188213118
+      spriteID: 4d7c0b7bfdaddb84f81e97d3cc434ebd
+      internalID: -1201296420
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: GrassTileMap_33
+      name: SnowTileMap_33
       rect:
         serializedVersion: 2
         x: 160
@@ -852,18 +892,19 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 6aac722197b5fc140bdf6007f6bceed0
-      internalID: -797942608
+      spriteID: a2e51510ff6b36243b37639823fc8008
+      internalID: -1955209040
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: GrassTileMap_34
+      name: SnowTileMap_34
       rect:
         serializedVersion: 2
         x: 192
@@ -873,18 +914,19 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 0c141d988300b6140aa1802c74140a39
-      internalID: -2036290657
+      spriteID: 58eeee166c6d19c4db07142b0a0b7cda
+      internalID: -657808626
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: GrassTileMap_35
+      name: SnowTileMap_35
       rect:
         serializedVersion: 2
         x: 0
@@ -894,18 +936,19 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: afaa72bf886dee446a4a8484651c78e7
-      internalID: 1801111314
+      spriteID: b1fdf158f64860f44bc8cd76ace22f01
+      internalID: 565810110
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: GrassTileMap_36
+      name: SnowTileMap_36
       rect:
         serializedVersion: 2
         x: 32
@@ -915,18 +958,19 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 700ccb82075ae57449b71e8158e86e18
-      internalID: 2097644154
+      spriteID: 8742e0d1b5a24ae4087d49d79fb2623e
+      internalID: 466235458
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: GrassTileMap_37
+      name: SnowTileMap_37
       rect:
         serializedVersion: 2
         x: 64
@@ -936,18 +980,19 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: aa029a4a493cd8f4993368dd9bda7283
-      internalID: 8793538
+      spriteID: 8c5fd826adac71f4e8268b8116a584be
+      internalID: -1522568299
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: GrassTileMap_38
+      name: SnowTileMap_38
       rect:
         serializedVersion: 2
         x: 96
@@ -957,18 +1002,19 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: db30a8a575f42dc4aaba1e2f7c3e8eed
-      internalID: -817704597
+      spriteID: abb1cb9da83cf6a4e814fc40c01e7a6c
+      internalID: 2111695378
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: GrassTileMap_39
+      name: SnowTileMap_39
       rect:
         serializedVersion: 2
         x: 128
@@ -978,18 +1024,19 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 8b4ee8eb9f34574439529f57d86b5baf
-      internalID: -595380053
+      spriteID: 862ffc099661277498199b7b6ea33083
+      internalID: -27144782
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: GrassTileMap_40
+      name: SnowTileMap_40
       rect:
         serializedVersion: 2
         x: 160
@@ -999,18 +1046,19 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: e6622f34a13c7e3489d05fe4653c6754
-      internalID: -1070563614
+      spriteID: 99825fa4e6bc5884494f3746474f00f2
+      internalID: -2060471541
       vertices: []
       indices: 
       edges: []
       weights: []
     - serializedVersion: 2
-      name: GrassTileMap_41
+      name: SnowTileMap_41
       rect:
         serializedVersion: 2
         x: 192
@@ -1020,17 +1068,19 @@ TextureImporter:
       alignment: 0
       pivot: {x: 0, y: 0}
       border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
       outline: []
       physicsShape: []
       tessellationDetail: 0
       bones: []
-      spriteID: 1fa8c007bb5dbb54b9ecd59dbbbca14f
-      internalID: 73087210
+      spriteID: 3bfb6c3a2b2c8cd449bfa1877ec68a05
+      internalID: -615885034
       vertices: []
       indices: 
       edges: []
       weights: []
     outline: []
+    customData: 
     physicsShape: []
     bones: []
     spriteID: 5e97eb03825dee720800000000000000
@@ -1040,58 +1090,53 @@ TextureImporter:
     edges: []
     weights: []
     secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
     nameFileIdTable:
-      GrassTileMap_0: 1589209162
-      GrassTileMap_1: -256437696
-      GrassTileMap_10: -1088661518
-      GrassTileMap_11: -2095808464
-      GrassTileMap_12: 237623493
-      GrassTileMap_13: -604976277
-      GrassTileMap_14: -1020889536
-      GrassTileMap_15: 1759062274
-      GrassTileMap_16: 624316565
-      GrassTileMap_17: -68039432
-      GrassTileMap_18: 621791385
-      GrassTileMap_19: -1069940154
-      GrassTileMap_2: -1960347807
-      GrassTileMap_20: -870895246
-      GrassTileMap_21: -1575680469
-      GrassTileMap_22: -1129913567
-      GrassTileMap_23: 996938691
-      GrassTileMap_24: 492438439
-      GrassTileMap_25: -917824411
-      GrassTileMap_26: -1854445451
-      GrassTileMap_27: -2142202101
-      GrassTileMap_28: -257451651
-      GrassTileMap_29: -1866437147
-      GrassTileMap_3: -1127604392
-      GrassTileMap_30: 192315924
-      GrassTileMap_31: -901478912
-      GrassTileMap_32: -1188213118
-      GrassTileMap_33: -797942608
-      GrassTileMap_34: -2036290657
-      GrassTileMap_35: 1801111314
-      GrassTileMap_36: 2097644154
-      GrassTileMap_37: 8793538
-      GrassTileMap_38: -817704597
-      GrassTileMap_39: -595380053
-      GrassTileMap_4: -1572072983
-      GrassTileMap_40: -1070563614
-      GrassTileMap_41: 73087210
-      GrassTileMap_5: 1905314444
-      GrassTileMap_6: -1052201673
-      GrassTileMap_7: -1169406595
-      GrassTileMap_8: 175720932
-      GrassTileMap_9: -1176300094
+      SnowTileMap_0: -2029417509
+      SnowTileMap_1: -864773296
+      SnowTileMap_10: 1282119772
+      SnowTileMap_11: 2019650856
+      SnowTileMap_12: -1712529641
+      SnowTileMap_13: 1103496840
+      SnowTileMap_14: -1264529531
+      SnowTileMap_15: -715371312
+      SnowTileMap_16: 737258566
+      SnowTileMap_17: 857311052
+      SnowTileMap_18: -1107613049
+      SnowTileMap_19: 453623541
+      SnowTileMap_2: -419517007
+      SnowTileMap_20: 1966073890
+      SnowTileMap_21: -1804436175
+      SnowTileMap_22: -1354517576
+      SnowTileMap_23: -1100844389
+      SnowTileMap_24: -1247946419
+      SnowTileMap_25: 1887802759
+      SnowTileMap_26: 1229117147
+      SnowTileMap_27: -170919103
+      SnowTileMap_28: 1262109289
+      SnowTileMap_29: -429880292
+      SnowTileMap_3: -970351661
+      SnowTileMap_30: -980319806
+      SnowTileMap_31: 7197624
+      SnowTileMap_32: -1201296420
+      SnowTileMap_33: -1955209040
+      SnowTileMap_34: -657808626
+      SnowTileMap_35: 565810110
+      SnowTileMap_36: 466235458
+      SnowTileMap_37: -1522568299
+      SnowTileMap_38: 2111695378
+      SnowTileMap_39: -27144782
+      SnowTileMap_4: 1906745350
+      SnowTileMap_40: -2060471541
+      SnowTileMap_41: -615885034
+      SnowTileMap_5: 668566487
+      SnowTileMap_6: -1747042729
+      SnowTileMap_7: -1816988909
+      SnowTileMap_8: 43384827
+      SnowTileMap_9: 1579392790
   mipmapLimitGroupName: 
   pSDRemoveMatte: 0
   userData: 
   assetBundleName: 
   assetBundleVariant: 
-AssetOrigin:
-  serializedVersion: 1
-  productId: 283698
-  packageName: Simple Rule Tiles
-  packageVersion: 1.1
-  assetPath: Assets/SimpleRuleTiles/Grass/GrassTileMap.png
-  uploadId: 666033
