@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.Rendering.Universal;
 
 [RequireComponent(typeof(PlayerInput))]
 public class LightController : MonoBehaviour
@@ -7,9 +8,8 @@ public class LightController : MonoBehaviour
     [SerializeField] private float maxEnergy = 100f;
     [SerializeField] private float depleteRate = 20f;
     [SerializeField] private float rechargeRate = 15f;
-
     [SerializeField] private float minimumEnergyToRestart = 20f;
-
+    [SerializeField] private Light2D coneLight;
     private PlayerInput input;
     private Camera mainCamera;
 
@@ -22,6 +22,8 @@ public class LightController : MonoBehaviour
         input = GetComponent<PlayerInput>();
         mainCamera = Camera.main;
         currentEnergy = maxEnergy;
+
+        if (coneLight != null) coneLight.enabled = false;
     }
 
     private void Update()
@@ -43,7 +45,7 @@ public class LightController : MonoBehaviour
             if (!isLightActive)
             {
                 isLightActive = true;
-                Debug.Log("Light Turned ON");
+                if (coneLight != null) coneLight.enabled = true;
             }
 
             currentEnergy -= depleteRate * Time.deltaTime;
@@ -52,17 +54,12 @@ public class LightController : MonoBehaviour
             {
                 currentEnergy = 0;
                 isOverheated = true;
-                isLightActive = false;
-                Debug.Log("Light DIED - Overheated! Waiting for recharge...");
+                TurnOffLight();
             }
         }
         else
         {
-            if (isLightActive)
-            {
-                isLightActive = false;
-                Debug.Log("Light Turned OFF");
-            }
+            if (isLightActive) TurnOffLight();
 
             if (currentEnergy < maxEnergy)
             {
@@ -71,7 +68,6 @@ public class LightController : MonoBehaviour
                 if (isOverheated && currentEnergy >= minimumEnergyToRestart)
                 {
                     isOverheated = false;
-                    Debug.Log("Light recovered enough energy to use again.");
                 }
             }
         }
@@ -79,16 +75,22 @@ public class LightController : MonoBehaviour
         currentEnergy = Mathf.Clamp(currentEnergy, 0, maxEnergy);
     }
 
+    private void TurnOffLight()
+    {
+        isLightActive = false;
+        if (coneLight != null) coneLight.enabled = false;
+    }
+
     private void AimLight()
     {
+        if (coneLight == null) return;
+
         Vector3 mouseWorldPos = mainCamera.ScreenToWorldPoint(input.MouseScreenPosition);
         mouseWorldPos.z = 0f;
 
-        Vector3 aimDirection = (mouseWorldPos - transform.position).normalized;
-
+        Vector3 aimDirection = (mouseWorldPos - coneLight.transform.position).normalized;
         float angle = Mathf.Atan2(aimDirection.y, aimDirection.x) * Mathf.Rad2Deg;
 
-
-        Debug.DrawRay(transform.position, aimDirection * 5f, Color.yellow); // Visual debug line
+        coneLight.transform.rotation = Quaternion.Euler(0, 0, angle - 90f);
     }
 }
