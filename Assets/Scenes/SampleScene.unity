@@ -1045,7 +1045,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: da8a22b725dee2949b0cfa89bcfbfd0b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CameraController2D
-  target: {fileID: 620240782}
+  target: {fileID: 620240787}
   offset: {x: 0, y: 0}
   horizontalSmoothTime: 0.15
   verticalSmoothTime: 0.15
@@ -1294,7 +1294,9 @@ GameObject:
   - component: {fileID: 620240785}
   - component: {fileID: 620240784}
   - component: {fileID: 620240783}
-  - component: {fileID: 620240782}
+  - component: {fileID: 620240787}
+  - component: {fileID: 620240789}
+  - component: {fileID: 620240788}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -1302,45 +1304,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &620240782
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 620240781}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 91e344b287bd8c2488c1bf606ac2b55b, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerController2D
-  moveAction: {fileID: -1680190386980627800, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
-  jumpAction: {fileID: -2099379676528639254, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
-  groundLayer:
-    serializedVersion: 2
-    m_Bits: 8
-  maxSlopeAngle: 50
-  maxSpeed: 8
-  acceleration: 90
-  airControl: 0.65
-  jumpHeight: 3.2
-  timeToApex: 0.4
-  fallGravityMultiplier: 2
-  jumpCutMultiplier: 0.5
-  maxFallSpeed: 18
-  airJumps: 1
-  airJumpHeight: 2.5
-  wallSlideSpeed: 3
-  wallJumpPushSpeed: 11
-  wallJumpControlTime: 0.2
-  coyoteTime: 0.1
-  jumpBufferTime: 0.1
-  cornerCorrection: 0.25
-  maxStepHeight: 0.15
-  current_sprite: {fileID: 620240785}
-  spunt_test_default: {fileID: -8856902533751783995, guid: 8f3137aecc5ae9340b95a1906a6a6519, type: 3}
-  spunt_test_left: {fileID: -3967978382362965668, guid: 914d461ad61c29f47a1988192e5ec724, type: 3}
-  spunt_test_right: {fileID: -6081857396075939817, guid: b67f59811de25c94b858334292524d11, type: 3}
 --- !u!61 &620240783
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -1489,6 +1452,68 @@ Transform:
   - {fileID: 1159438179}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &620240787
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 620240781}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ca08c44fb2dd14ef0a3ff00fd60d0fb5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::Assets.Scripts.Gameplay.Player.PlayerMovement
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 8
+  maxSlopeAngle: 50
+  maxSpeed: 8
+  acceleration: 90
+  airControl: 0.65
+  jumpHeight: 3.2
+  timeToApex: 0.4
+  fallGravityMultiplier: 2
+  jumpCutMultiplier: 0.5
+  maxFallSpeed: 18
+  airJumps: 1
+  airJumpHeight: 2.5
+  wallSlideSpeed: 3
+  wallJumpPushSpeed: 11
+  wallJumpControlTime: 0.2
+  coyoteTime: 0.1
+  jumpBufferTime: 0.1
+  cornerCorrection: 0.25
+  maxStepHeight: 0.15
+--- !u!114 &620240788
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 620240781}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: aa66e29355e634eda9c860cb33b718a1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerVisuals
+  spunt_test_default: {fileID: -8856902533751783995, guid: 8f3137aecc5ae9340b95a1906a6a6519, type: 3}
+  spunt_test_left: {fileID: -3967978382362965668, guid: 914d461ad61c29f47a1988192e5ec724, type: 3}
+  spunt_test_right: {fileID: -6081857396075939817, guid: b67f59811de25c94b858334292524d11, type: 3}
+--- !u!114 &620240789
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 620240781}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1c6eac1cd305d4e09aa502318b2e54fa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerInput
+  moveAction: {fileID: -1680190386980627800, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
+  jumpAction: {fileID: -2099379676528639254, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
 --- !u!1 &641872357
 GameObject:
   m_ObjectHideFlags: 0

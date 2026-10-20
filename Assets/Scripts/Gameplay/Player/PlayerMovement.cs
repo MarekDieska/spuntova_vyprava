@@ -1,13 +1,8 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 
-[RequireComponent(typeof(Rigidbody2D), typeof(BoxCollider2D))]
-public class PlayerController2D : MonoBehaviour
+[RequireComponent(typeof(Rigidbody2D), typeof(BoxCollider2D), typeof(PlayerInput))]
+public class PlayerMovement : MonoBehaviour
 {
-    [Header("Input")]
-    [SerializeField] InputActionReference moveAction = null;
-    [SerializeField] InputActionReference jumpAction = null;
-
     [Header("Collision")]
     [SerializeField] LayerMask groundLayer;
     [SerializeField, Range(0f, 89f)] float maxSlopeAngle = 50f;
@@ -39,11 +34,6 @@ public class PlayerController2D : MonoBehaviour
     [SerializeField] float cornerCorrection = 0.25f;
     [SerializeField] float maxStepHeight = 0.15f;
 
-    [SerializeField] SpriteRenderer current_sprite;
-    [SerializeField] Sprite spunt_test_default;
-    [SerializeField] Sprite spunt_test_left;
-    [SerializeField] Sprite spunt_test_right;
-
     public bool IsGrounded => isGrounded;
     public bool IsWallSliding => isWallSliding;
     public Vector2 Velocity => velocity;
@@ -61,10 +51,13 @@ public class PlayerController2D : MonoBehaviour
 
     Rigidbody2D rb;
     BoxCollider2D col;
+    PlayerInput input;
     Vector2 velocity;
+
     float moveInput;
     bool jumpHeld;
     float lastJumpPressedTime = float.NegativeInfinity;
+
     float lastGroundedTime = float.NegativeInfinity;
     float wallJumpTime = float.NegativeInfinity;
     float lastJumpTime = float.NegativeInfinity;
@@ -82,6 +75,7 @@ public class PlayerController2D : MonoBehaviour
     {
         rb = GetComponent<Rigidbody2D>();
         col = GetComponent<BoxCollider2D>();
+        input = GetComponent<PlayerInput>();
 
         rb.gravityScale = 0f;
         rb.freezeRotation = true;
@@ -92,44 +86,16 @@ public class PlayerController2D : MonoBehaviour
         airJumpsLeft = airJumps;
     }
 
-    void OnEnable()
-    {
-        if (moveAction == null || jumpAction == null)
-        {
-            Debug.LogError("Assign the Move and Jump actions on PlayerController2D.", this);
-            enabled = false;
-            return;
-        }
-        moveAction.action.Enable();
-        jumpAction.action.Enable();
-
-        if (groundLayer.value == 0)
-            Debug.LogWarning("Ground Layer is not set on PlayerController2D, so the floor and walls won't be detected.", this);
-    }
-
     void Update()
     {
-        float x = moveAction.action.ReadValue<Vector2>().x;
-        moveInput = Mathf.Abs(x) < StickDeadZone ? 0f : Mathf.Sign(x);
+        // Read from PlayerInput every frame so we don't drop button presses
+        moveInput = Mathf.Abs(input.MoveInput) < StickDeadZone ? 0f : Mathf.Sign(input.MoveInput);
+        jumpHeld = input.JumpHeld;
 
-
-        if (moveInput == 0f)
+        if (input.JumpPressedThisFrame)
         {
-            current_sprite.sprite = spunt_test_default;
-        } 
-        else if (moveInput < 0f)
-        {
-            current_sprite.sprite = spunt_test_left;
-        }
-        else
-        {
-            current_sprite.sprite = spunt_test_right;
-        }
-
-
-        jumpHeld = jumpAction.action.IsPressed();
-        if (jumpAction.action.WasPressedThisFrame())
             lastJumpPressedTime = Time.time;
+        }
     }
 
     void FixedUpdate()

@@ -4,7 +4,7 @@ using UnityEngine;
 public class CameraController2D : MonoBehaviour
 {
     [Header("Target")]
-    [SerializeField] PlayerController2D target;
+    [SerializeField] PlayerMovement target;
     [SerializeField] Vector2 offset = new Vector2(0f, 1f);
 
     [Header("Follow")]
@@ -48,7 +48,7 @@ public class CameraController2D : MonoBehaviour
     float sizeVelocity;
     Vector2 followVelocity;
 
-    void Reset() => target = FindAnyObjectByType<PlayerController2D>();
+    void Reset() => target = FindAnyObjectByType<PlayerMovement>();
 
     void Awake()
     {
@@ -60,7 +60,7 @@ public class CameraController2D : MonoBehaviour
     void Start()
     {
         if (target == null)
-            target = FindAnyObjectByType<PlayerController2D>();
+            target = FindAnyObjectByType<PlayerMovement>();
         if (target == null)
         {
             Debug.LogError("CameraController2D has no PlayerController2D to follow.", this);
