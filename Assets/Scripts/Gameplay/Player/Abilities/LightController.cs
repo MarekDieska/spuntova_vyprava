@@ -1,96 +1,123 @@
+
 using UnityEngine;
+using UnityEngine.InputSystem;
 using UnityEngine.Rendering.Universal;
 
-[RequireComponent(typeof(PlayerInput))]
 public class LightController : MonoBehaviour
 {
     [Header("Light Settings")]
+    [SerializeField] private Light2D circleLight;
+    [SerializeField] private float lightRadius = 5f;
+    [SerializeField] private Key toggleKey = Key.F;
+
+    [Header("Energy Settings")]
     [SerializeField] private float maxEnergy = 100f;
     [SerializeField] private float depleteRate = 20f;
     [SerializeField] private float rechargeRate = 15f;
     [SerializeField] private float minimumEnergyToRestart = 20f;
-    [SerializeField] private Light2D coneLight;
-    private PlayerInput input;
-    private Camera mainCamera;
 
+    private Camera mainCamera;
     private float currentEnergy;
-    private bool isLightActive;
+    private bool isLightActive = true;
     private bool isOverheated;
 
     private void Awake()
     {
-        input = GetComponent<PlayerInput>();
         mainCamera = Camera.main;
         currentEnergy = maxEnergy;
 
-        if (coneLight != null) coneLight.enabled = false;
+        if (circleLight != null)
+        {
+            circleLight.enabled = false;
+            circleLight.pointLightOuterRadius = lightRadius;
+        }
     }
 
     private void Update()
     {
-        HandleEnergyLogic();
+        HandleInput();
+        HandleEnergy();
 
-        if (isLightActive)
+        if (circleLight != null)
         {
-            AimLight();
+            circleLight.enabled = isLightActive;
+
+            if (isLightActive)
+            {
+                MoveLightToMouse();
+            }
         }
     }
 
-    private void HandleEnergyLogic()
+    private void HandleInput()
     {
-        bool wantsToUseLight = input.LightHeld && !isOverheated;
+        if (Keyboard.current == null)
+            return;
 
-        if (wantsToUseLight && currentEnergy > 0)
+        if (Keyboard.current[toggleKey].wasPressedThisFrame && !isOverheated)
         {
-            if (!isLightActive)
-            {
-                isLightActive = true;
-                if (coneLight != null) coneLight.enabled = true;
-            }
+            isLightActive = !isLightActive;
+        }
+    }
 
+    private void HandleEnergy()
+    {
+        if (isLightActive)
+        {
             currentEnergy -= depleteRate * Time.deltaTime;
 
-            if (currentEnergy <= 0)
+            if (currentEnergy <= 0f)
             {
-                currentEnergy = 0;
+                currentEnergy = 0f;
+                isLightActive = false;
                 isOverheated = true;
-                TurnOffLight();
             }
         }
         else
         {
-            if (isLightActive) TurnOffLight();
+            currentEnergy = Mathf.Min(
+                currentEnergy + rechargeRate * Time.deltaTime,
+                maxEnergy
+            );
 
-            if (currentEnergy < maxEnergy)
+            if (isOverheated &&
+                currentEnergy >= minimumEnergyToRestart)
             {
-                currentEnergy += rechargeRate * Time.deltaTime;
-
-                if (isOverheated && currentEnergy >= minimumEnergyToRestart)
-                {
-                    isOverheated = false;
-                }
+                isOverheated = false;
             }
         }
-
-        currentEnergy = Mathf.Clamp(currentEnergy, 0, maxEnergy);
     }
 
-    private void TurnOffLight()
+    private void MoveLightToMouse()
     {
-        isLightActive = false;
-        if (coneLight != null) coneLight.enabled = false;
+        if (mainCamera == null || Mouse.current == null)
+            return;
+
+        Vector2 mouseScreenPosition = Mouse.current.position.ReadValue();
+        float cameraDistance = Mathf.Abs(
+            mainCamera.transform.position.z
+        );
+
+        Vector3 mouseWorldPosition = mainCamera.ScreenToWorldPoint(
+            new Vector3(
+                mouseScreenPosition.x,
+                mouseScreenPosition.y,
+                cameraDistance
+            )
+        );
+
+        mouseWorldPosition.z = 0f;
+
+        circleLight.transform.position = mouseWorldPosition;
     }
 
-    private void AimLight()
+    public float GetCurrentEnergy()
     {
-        if (coneLight == null) return;
+        return currentEnergy;
+    }
 
-        Vector3 mouseWorldPos = mainCamera.ScreenToWorldPoint(input.MouseScreenPosition);
-        mouseWorldPos.z = 0f;
-
-        Vector3 aimDirection = (mouseWorldPos - coneLight.transform.position).normalized;
-        float angle = Mathf.Atan2(aimDirection.y, aimDirection.x) * Mathf.Rad2Deg;
-
-        coneLight.transform.rotation = Quaternion.Euler(0, 0, angle - 90f);
+    public float GetEnergyPercentage()
+    {
+        return maxEnergy > 0f ? currentEnergy / maxEnergy : 0f;
     }
 }
