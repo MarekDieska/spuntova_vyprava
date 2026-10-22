@@ -327,6 +327,10 @@ public class ParallaxManager : MonoBehaviour
         GameObject obj = new GameObject(name);
         obj.transform.SetParent(parent, false);
         SpriteRenderer renderer = obj.AddComponent<SpriteRenderer>();
+        if (order > 0)
+        {
+            renderer.sortingLayerName = "Player";
+        }
         renderer.sortingOrder = order;
         return renderer;
     }
