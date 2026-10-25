@@ -13,6 +13,8 @@ public class GrappleAbility : MonoBehaviour
     [SerializeField] float swingForce = 25f;
     [SerializeField] float maxSwingSpeed = 12f;
     [SerializeField] float releaseBoost = 1.1f;
+    [SerializeField] float swingDamping = 2f;
+    float normalDamping;
 
     public bool IsGrappled {get; private set; }
 
@@ -37,10 +39,12 @@ public class GrappleAbility : MonoBehaviour
         joint = GetComponent<DistanceJoint2D>();
         line = GetComponent<LineRenderer>();
 
+        normalDamping = rb.linearDamping;
+
         joint.enabled = false;
         joint.autoConfigureConnectedAnchor = false;
         joint.autoConfigureDistance = false;
-        joint.maxDistanceOnly = false;
+        joint.maxDistanceOnly = true;
         line.positionCount = 2;
         line.enabled = false;
     }
@@ -109,6 +113,10 @@ public class GrappleAbility : MonoBehaviour
 
         IsGrappled = true;
         line.enabled = true;
+
+        rb.linearDamping = swingDamping;
+
+        movement.State = PlayerMovement.PlayerState.Grappled;
     }
 
     private void Swing()
@@ -121,7 +129,7 @@ public class GrappleAbility : MonoBehaviour
             float side = Mathf.Sign(Vector2.Dot(tangent, Vector2.right * horizontalInput));
             if (rb.linearVelocity.magnitude < maxSwingSpeed)
             {
-                rb.AddForce(tangent * side * swingForce);
+                rb.AddForce(side * swingForce * tangent);
             }
         }
     }
@@ -135,5 +143,8 @@ public class GrappleAbility : MonoBehaviour
 
         rb.linearVelocity *= releaseBoost;
         current = null;
+
+        rb.linearDamping = normalDamping;
+        movement.State = PlayerMovement.PlayerState.Normal;
     }
 }
