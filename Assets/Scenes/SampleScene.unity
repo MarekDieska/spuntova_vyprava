@@ -3460,9 +3460,9 @@ MonoBehaviour:
   - {x: 0.5, y: -0.5, z: 0}
   - {x: 0.5, y: 0.5, z: 0}
   - {x: -0.5, y: 0.5, z: 0}
+<<<<<<< HEAD
 --- !u!1 &1174685683
 GameObject:
-  m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
@@ -3554,9 +3554,9 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1.2643242, y: 5.2245736}
   m_EdgeRadius: 0
---- !u!1 &1259400647
-GameObject:
-  m_ObjectHideFlags: 0
+=======
+--- !u!4 &1223977216 stripped
+Transform:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
