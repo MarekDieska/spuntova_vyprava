@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D), typeof(BoxCollider2D), typeof(PlayerInput))]
@@ -69,6 +70,10 @@ public class PlayerMovement : MonoBehaviour
 
     float Gravity => 2f * jumpHeight / (timeToApex * timeToApex);
 
+    public enum PlayerState { Normal, Grappled }
+
+    public PlayerState State { get; set; }
+
     void Reset() => groundLayer = LayerMask.GetMask("Ground");
 
     void Awake()
@@ -76,6 +81,8 @@ public class PlayerMovement : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         col = GetComponent<BoxCollider2D>();
         input = GetComponent<PlayerInput>();
+
+        State = PlayerState.Normal;
 
         rb.gravityScale = 0f;
         rb.freezeRotation = true;
@@ -102,13 +109,16 @@ public class PlayerMovement : MonoBehaviour
     {
         velocity = rb.linearVelocity;
 
+        if (State == PlayerState.Normal)
+        {
+            Run();
+            StepOverBumps();
+            CutJumpIfReleased();
+            CorrectCorners();
+        }
         CheckSurroundings();
-        Run();
-        StepOverBumps();
         TryJump();
-        CutJumpIfReleased();
         ApplyGravity();
-        CorrectCorners();
 
         rb.linearVelocity = velocity;
     }
@@ -137,6 +147,12 @@ public class PlayerMovement : MonoBehaviour
         isWallSliding = wall != 0 && MoveInput == wall && velocity.y <= 0f;
         if (isWallSliding)
             airJumpsLeft = airJumps;
+
+        if (State == PlayerState.Grappled)
+        {
+            isGrounded = true;
+            airJumpsLeft = airJumps;
+        }
     }
 
     void Run()
@@ -195,7 +211,7 @@ public class PlayerMovement : MonoBehaviour
         bool canGroundJump = Time.time - lastGroundedTime <= coyoteTime;
         int wall = WallSide(WallJumpDistance);
 
-        if (canGroundJump)
+        if (canGroundJump || State == PlayerState.Grappled)
         {
             Jump(jumpHeight);
         }
