@@ -125,6 +125,16 @@
                     "interactions": "",
                     "initialStateCheck": false,
                     "priority": 0
+                },
+                {
+                    "name": "UseGrapple",
+                    "type": "Button",
+                    "id": "0907fb38-aa72-4529-be73-cd744a0b57a8",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false,
+                    "priority": 0
                 }
             ],
             "bindings": [
@@ -543,17 +553,6 @@
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "AimLight",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
-                    "id": "f49d0b4a-71ce-48fc-802a-b7cbdf80fbc4",
-                    "path": "<Gamepad>/rightStick",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": ";Gamepad",
                     "action": "AimLight",
                     "isComposite": false,
                     "isPartOfComposite": false
