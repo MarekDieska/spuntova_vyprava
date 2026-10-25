@@ -6,6 +6,7 @@ public abstract class BaseLightAbility : MonoBehaviour
 {
     [Header("Light Component")]
     [SerializeField] protected Light2D abilityLight;
+    [SerializeField] protected Collider2D lightCollider;
     [Header("Energy Settings")]
     [SerializeField] protected float maxEnergy = 100f;
     [SerializeField] protected float depleteRate = 20f;
@@ -26,6 +27,8 @@ public abstract class BaseLightAbility : MonoBehaviour
 
         if (abilityLight != null)
             abilityLight.enabled = false;
+        if (lightCollider != null)
+            lightCollider.enabled = false;
     }
 
     protected virtual void Update()
@@ -85,6 +88,8 @@ public abstract class BaseLightAbility : MonoBehaviour
     {
         if (abilityLight != null)
             abilityLight.enabled = isActive;
+        if (lightCollider != null)
+            lightCollider.enabled = isActive;
     }
 
     private Vector3 GetMouseWorldPosition()
