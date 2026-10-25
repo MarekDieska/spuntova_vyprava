@@ -567,6 +567,17 @@
                     "action": "AimLight",
                     "isComposite": false,
                     "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "2c8f389c-7204-445e-8365-0f35f5883843",
+                    "path": "<Keyboard>/g",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "UseGrapple",
+                    "isComposite": false,
+                    "isPartOfComposite": false
                 }
             ]
         },

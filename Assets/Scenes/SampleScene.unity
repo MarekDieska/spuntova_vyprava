@@ -2073,6 +2073,7 @@ GameObject:
   - component: {fileID: 620240788}
   - component: {fileID: 620240791}
   - component: {fileID: 620240790}
+  - component: {fileID: 620240792}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -2294,6 +2295,7 @@ MonoBehaviour:
   jumpAction: {fileID: -2099379676528639254, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   lightAction: {fileID: -4600379498413845215, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   aimPositionAction: {fileID: 5443390769958738457, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
+  grappleAction: {fileID: 1315557974773395553, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
 --- !u!114 &620240790
 MonoBehaviour:
   m_ObjectHideFlags: 0
