@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
@@ -9,6 +10,7 @@ public class PlayerInput : MonoBehaviour
     [Header("Light Input")]
     [SerializeField] private InputActionReference lightAction;
     [SerializeField] private InputActionReference aimPositionAction;
+    [SerializeField] private InputActionReference grappleAction;
 
 
     public float MoveInput { get; private set; }
@@ -16,6 +18,7 @@ public class PlayerInput : MonoBehaviour
     public bool JumpPressedThisFrame { get; private set; }
     public bool LightHeld { get; private set; }
     public Vector2 MouseScreenPosition { get; private set; }
+    public bool GrapplePressedThisFrame { get; private set; }
 
     private void OnEnable()
     {
@@ -23,6 +26,7 @@ public class PlayerInput : MonoBehaviour
         if (jumpAction != null) jumpAction.action.Enable();
         if (lightAction != null) lightAction.action.Enable();
         if (aimPositionAction != null) aimPositionAction.action.Enable();
+        if (grappleAction != null) grappleAction.action.Enable();
     }
 
     private void OnDisable()
@@ -31,6 +35,7 @@ public class PlayerInput : MonoBehaviour
         if (jumpAction != null) jumpAction.action.Disable();
         if (lightAction != null) lightAction.action.Disable();
         if (aimPositionAction != null) aimPositionAction.action.Disable();
+        if (grappleAction != null) grappleAction.action.Disable();
     }
 
     private void Update()
@@ -40,5 +45,6 @@ public class PlayerInput : MonoBehaviour
         JumpPressedThisFrame = jumpAction.action.WasPressedThisFrame();
         LightHeld = lightAction.action.IsPressed();
         MouseScreenPosition = aimPositionAction.action.ReadValue<Vector2>();
+        GrapplePressedThisFrame = grappleAction.action.WasPerformedThisFrame();
     }
 }

@@ -54,7 +54,7 @@ public class PlayerMovement : MonoBehaviour
     PlayerInput input;
     Vector2 velocity;
 
-    float moveInput;
+    public float MoveInput { get; private set; }
     bool jumpHeld;
     float lastJumpPressedTime = float.NegativeInfinity;
 
@@ -89,7 +89,7 @@ public class PlayerMovement : MonoBehaviour
     void Update()
     {
         // Read from PlayerInput every frame so we don't drop button presses
-        moveInput = Mathf.Abs(input.MoveInput) < StickDeadZone ? 0f : Mathf.Sign(input.MoveInput);
+        MoveInput = Mathf.Abs(input.MoveInput) < StickDeadZone ? 0f : Mathf.Sign(input.MoveInput);
         jumpHeld = input.JumpHeld;
 
         if (input.JumpPressedThisFrame)
@@ -134,7 +134,7 @@ public class PlayerMovement : MonoBehaviour
         }
 
         int wall = isGrounded ? 0 : WallSide(ContactDistance);
-        isWallSliding = wall != 0 && moveInput == wall && velocity.y <= 0f;
+        isWallSliding = wall != 0 && MoveInput == wall && velocity.y <= 0f;
         if (isWallSliding)
             airJumpsLeft = airJumps;
     }
@@ -151,22 +151,22 @@ public class PlayerMovement : MonoBehaviour
         if (isGrounded)
         {
             Vector2 along = new Vector2(groundNormal.y, -groundNormal.x);
-            float speed = Mathf.MoveTowards(Vector2.Dot(velocity, along), moveInput * maxSpeed, step);
+            float speed = Mathf.MoveTowards(Vector2.Dot(velocity, along), MoveInput * maxSpeed, step);
             velocity = along * speed;
         }
         else
         {
-            velocity.x = Mathf.MoveTowards(velocity.x, moveInput * maxSpeed, step);
+            velocity.x = Mathf.MoveTowards(velocity.x, MoveInput * maxSpeed, step);
         }
     }
 
     void StepOverBumps()
     {
-        if (!isGrounded || moveInput == 0f || maxStepHeight <= 0f)
+        if (!isGrounded || MoveInput == 0f || maxStepHeight <= 0f)
             return;
 
         Bounds b = col.bounds;
-        Vector2 direction = new Vector2(moveInput, 0f);
+        Vector2 direction = new Vector2(MoveInput, 0f);
         float reach = Mathf.Abs(velocity.x) * Time.fixedDeltaTime + ContactDistance;
 
         Vector2 feetSize = new Vector2(b.size.x - 2f * Skin, maxStepHeight);
