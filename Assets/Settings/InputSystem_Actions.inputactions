@@ -115,6 +115,16 @@
                     "interactions": "",
                     "initialStateCheck": true,
                     "priority": 0
+                },
+                {
+                    "name": "UseGrapple",
+                    "type": "Button",
+                    "id": "0907fb38-aa72-4529-be73-cd744a0b57a8",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false,
+                    "priority": 0
                 }
             ],
             "bindings": [
@@ -522,6 +532,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "AimLight",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "2c8f389c-7204-445e-8365-0f35f5883843",
+                    "path": "<Keyboard>/g",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "UseGrapple",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
