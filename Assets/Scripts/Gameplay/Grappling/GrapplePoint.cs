@@ -24,6 +24,7 @@ public class GrapplePoint : MonoBehaviour
     {
         All.Add(this);
     }
+
     void OnDisable()
     {
         All.Remove(this);       
