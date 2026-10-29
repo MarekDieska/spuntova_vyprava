@@ -58,6 +58,9 @@ public class GrappleAbility : MonoBehaviour
         cooldownTimer -= Time.deltaTime;
         target = FindTarget();
 
+        if (target != null) target.Renderer.color = Color.yellow;
+        if (current != null) current.Renderer.color = Color.red;
+
         if (IsGrappled)
         {
             line.SetPosition(0, transform.position);
@@ -95,8 +98,8 @@ public class GrappleAbility : MonoBehaviour
         {
             if (p == current) continue;
             float d = Vector2.Distance(pos, p.Position);
-            if (d > p.MaxRange || d >= bestDist) continue;
-            if (Physics2D.Linecast(pos, p.Position, obstacleMask)) continue;
+            if (d > p.MaxRange || d >= bestDist) { p.Renderer.color = Color.cyan; continue; }
+            if (Physics2D.Linecast(pos, p.Position, obstacleMask)) { p.Renderer.color = Color.cyan; continue; }
 
             best = p;
             bestDist = d;
@@ -107,6 +110,7 @@ public class GrappleAbility : MonoBehaviour
     private void Attach(GrapplePoint point)
     {
         current = point;
+        current.Renderer.color = Color.red;
         joint.connectedAnchor = point.Position;
         joint.distance = point.RopeLength;
         joint.enabled = true;

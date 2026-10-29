@@ -18,10 +18,13 @@ public class GrapplePoint : MonoBehaviour
     public float MaxRange => maxRange;
     public Vector2 Position => transform.position;
 
+    public SpriteRenderer Renderer => GetComponent<SpriteRenderer>();
+
     void OnEnable()
     {
         All.Add(this);
     }
+
     void OnDisable()
     {
         All.Remove(this);       
