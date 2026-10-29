@@ -12,6 +12,7 @@ public abstract class BaseLightAbility : MonoBehaviour
     [SerializeField] protected float depleteRate = 20f;
     [SerializeField] protected float rechargeRate = 15f;
     [SerializeField] protected float minimumEnergyToRestart = 20f;
+    [SerializeField] private bool useUnlimitedEnergy = false;
 
     protected PlayerInput input;
     protected Camera mainCamera;
@@ -44,6 +45,11 @@ public abstract class BaseLightAbility : MonoBehaviour
 
     private void HandleInputAndEnergy()
     {
+        if (useUnlimitedEnergy)
+        {
+            currentEnergy = maxEnergy;
+            isOverheated = false;
+        }
         bool wantsToUseLight = input.LightHeld && !isOverheated;
 
         if (wantsToUseLight && currentEnergy > 0f)
@@ -54,20 +60,23 @@ public abstract class BaseLightAbility : MonoBehaviour
                 ToggleLightVisuals(true);
             }
 
-            currentEnergy -= depleteRate * Time.deltaTime;
-
-            if (currentEnergy <= 0f)
+            if (!useUnlimitedEnergy)
             {
-                currentEnergy = 0f;
-                isOverheated = true;
-                TurnOffLight();
+                currentEnergy -= depleteRate * Time.deltaTime;
+
+                if (currentEnergy <= 0f)
+                {
+                    currentEnergy = 0f;
+                    isOverheated = true;
+                    TurnOffLight();
+                }
             }
         }
         else
         {
             if (isLightActive) TurnOffLight();
 
-            if (currentEnergy < maxEnergy)
+            if (!useUnlimitedEnergy && currentEnergy < maxEnergy)
             {
                 currentEnergy = Mathf.Min(currentEnergy + rechargeRate * Time.deltaTime, maxEnergy);
 
