@@ -47,6 +47,9 @@ public class CameraController2D : MonoBehaviour
     float fallWeight;
     float sizeVelocity;
     Vector2 followVelocity;
+    Vector3 transitionStart;
+    float transitionTime;
+    float transitionDuration;
 
     void Reset() => target = FindAnyObjectByType<PlayerMovement>();
 
@@ -81,9 +84,19 @@ public class CameraController2D : MonoBehaviour
         lookAheadX = facing * lookAhead;
         lookAheadVelocity = sizeVelocity = fallWeight = turnTimer = 0f;
         followVelocity = Vector2.zero;
+        transitionTime = transitionDuration = 0f;
 
         cam.orthographicSize = Mathf.Min(BaseSize(player), MaxSizeInBounds());
         transform.position = ClampToBounds(DesiredPosition(player));
+    }
+
+    public void ChangeSection(BoxCollider2D newBounds, float duration)
+    {
+        levelBounds = newBounds;
+        transitionStart = transform.position;
+        transitionTime = 0f;
+        transitionDuration = duration;
+        followVelocity = Vector2.zero;
     }
 
     void LateUpdate()
@@ -99,6 +112,19 @@ public class CameraController2D : MonoBehaviour
         UpdateLookAhead(velocity.x, dt);
         UpdateFall(player, velocity.y, dt);
         UpdateZoom(player, velocity.x);
+
+        if (transitionTime < transitionDuration)
+        {
+            transitionTime += dt;
+            float progress = Mathf.Clamp01(transitionTime / transitionDuration);
+            float smoothProgress = Mathf.SmoothStep(0f, 1f, progress);
+            Vector3 destination = ClampToBounds(DesiredPosition(player));
+
+            // During the transition, the camera can travel between both sections.
+            transform.position = Vector3.Lerp(transitionStart, destination, smoothProgress);
+            return;
+        }
+
         Follow(player);
     }
 
