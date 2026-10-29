@@ -51,7 +51,7 @@ public class TemporalLightCharger : MonoBehaviour, ILightReactable
             isFullyCharged = true;
             activeTimer = activeDuration;
 
-            OnChargeStateChangedAction?.Invoke(true);
+            OnChargeStateChangedAction?.Invoke(true); //t or f can be changed dependent on needs
             OnChargeStateChangedLevelEvent?.Invoke(false);
         }
     }
@@ -69,13 +69,12 @@ public class TemporalLightCharger : MonoBehaviour, ILightReactable
                 currentCharge = 0f;
 
                 OnChargeProgressAction?.Invoke(0f);
-                OnChargeStateChangedAction?.Invoke(false);
+                OnChargeStateChangedAction?.Invoke(false); //t or f can be changed dependent on needs
                 OnChargeStateChangedLevelEvent?.Invoke(true);
             }
         }
         else if (!isLit && currentCharge > 0f)
         {
-            // Dissipate partial charge if the player stops shining on it early
             currentCharge = Mathf.Max(0f, currentCharge - (dropRate * Time.deltaTime));
             OnChargeProgressAction?.Invoke(currentCharge / timeToCharge);
             Debug.Log($"Energy State: {(currentCharge / timeToCharge) * 100f:F1}%");
