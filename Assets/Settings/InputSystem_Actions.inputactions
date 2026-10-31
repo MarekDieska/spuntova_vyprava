@@ -115,6 +115,16 @@
                     "interactions": "",
                     "initialStateCheck": true,
                     "priority": 0
+                },
+                {
+                    "name": "ToggleLight",
+                    "type": "Button",
+                    "id": "9d3b590b-968b-4d71-900c-512b75d12de3",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false,
+                    "priority": 0
                 }
             ],
             "bindings": [
@@ -506,7 +516,7 @@
                 {
                     "name": "",
                     "id": "592455ee-abe4-4fa9-8e7b-4bc337f61702",
-                    "path": "<Keyboard>/e",
+                    "path": "<Mouse>/leftButton",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -522,6 +532,17 @@
                     "processors": "",
                     "groups": "",
                     "action": "AimLight",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "6c234250-1bc0-457b-a62e-6cf0d4172da2",
+                    "path": "<Keyboard>/f",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "ToggleLight",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

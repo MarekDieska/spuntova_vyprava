@@ -1966,6 +1966,7 @@ GameObject:
   - component: {fileID: 620240790}
   - component: {fileID: 620240792}
   - component: {fileID: 620240793}
+  - component: {fileID: 620240794}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -2187,6 +2188,7 @@ MonoBehaviour:
   jumpAction: {fileID: -2099379676528639254, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   lightAction: {fileID: -4600379498413845215, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   aimPositionAction: {fileID: 5443390769958738457, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
+  lightToggleAction: {fileID: -6312406963403879206, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
 --- !u!114 &620240790
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2240,6 +2242,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: '::'
   maxHp: 3
+  hpAdjust: 1
 --- !u!114 &620240793
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2254,6 +2257,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerDamageVisuals
   iFrameDuration: 1.5
   blinkInterval: 0.1
+--- !u!114 &620240794
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 620240781}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f49a8c455d4abca4bb3dc5adf413bf08, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::LightToggleHandler
+  isBossFight: 0
 --- !u!1 &641872357
 GameObject:
   m_ObjectHideFlags: 0
