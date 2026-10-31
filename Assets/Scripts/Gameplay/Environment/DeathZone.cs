@@ -1,51 +1,20 @@
 
 using UnityEngine;
-using System.Collections;
 
 public class DeathZone : MonoBehaviour
 {
-    private Transform resetPosition;
-    public PlayerHealth health;
-    private bool isRespawning = false;
 
-    void Start()
-    {
-        resetPosition = transform.Find("ResetPosition"); //Kazda deathzone ma child objekt "ResetPosition" na tu poziciu sa spawne hrac po pade
-    }
+    [SerializeField] private Transform resetPosition;
+    [SerializeField] private int damageAmount = 1;
 
-    void OnTriggerEnter2D(Collider2D other)
+    private void OnTriggerEnter2D(Collider2D other)
     {
-        if (other.gameObject.name == "Player")
+        if (other.TryGetComponent(out IDamageable damageable))
         {
-            StartCoroutine(Respawn(other.gameObject));
-        }
-    }
+            damageable.TakeDamage(damageAmount);
 
-    IEnumerator Respawn(GameObject player)
-    {
-        player.transform.position = resetPosition.position;
-
-        if (!isRespawning)
-        {
-            isRespawning = true;
-
-            health.HPDown();
-
-            SpriteRenderer sprite = player.GetComponent<SpriteRenderer>();
-
-            if (sprite != null)
-            {
-                for (int i = 0; i < 8; i++)
-                {
-                    sprite.enabled = false;
-                    yield return new WaitForSeconds(0.1f);
-
-                    sprite.enabled = true;
-                    yield return new WaitForSeconds(0.1f);
-                }
-            }
-
-            isRespawning = false;
+            other.transform.position = resetPosition.position;
         }
     }
 }
+

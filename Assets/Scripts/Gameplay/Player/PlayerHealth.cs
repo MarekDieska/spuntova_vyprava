@@ -1,39 +1,47 @@
-
+using System;
 using UnityEngine;
-using UnityEngine.UI;
 
-public class PlayerHealth : MonoBehaviour
+public class PlayerHealth : MonoBehaviour, IDamageable
 {
-    public int hp = 3;
+    public event Action<int, int, int> OnHealthChangedAction; //<current, max, deltaChange>
+    public event Action OnDeathAction;
+    [SerializeField] private int maxHp = 3;
 
-    public Sprite fullHeart;
-    public Sprite emptyHeart;
-    public Image[] hearts;
+    private int currentHp;
+    private bool isInvincible = false;
 
-    void Start()
+    private void Awake()
     {
-        UpdateHearts();
+        currentHp = maxHp;
     }
-
-    public void HPDown()
+    private void Start()
     {
-        if (hp <= 0)
-            return;
+        OnHealthChangedAction?.Invoke(currentHp, maxHp, 0);
+    }
+    public void TakeDamage(int amount)
+    {
+        if (isInvincible || currentHp <= 0) return;
 
-        hp--;
-        UpdateHearts();
+        currentHp = Mathf.Max(0, currentHp - amount);
 
-        if (hp == 0)
+        OnHealthChangedAction?.Invoke(currentHp, maxHp, amount);
+        if (currentHp == 0)
         {
-            Debug.Log("Tu pridať smrť");
+            OnDeathAction?.Invoke();
         }
     }
-
-    void UpdateHearts()
+    public void SetInvincible(bool state)
     {
-        for (int i = 0; i < hearts.Length; i++)
-        {
-            hearts[i].sprite = i < hp ? fullHeart : emptyHeart;
-        }
+        isInvincible = state;
+    }
+
+    [SerializeField] private int hpAdjust = 1;
+    //SIMULATE DIFFUCULTY CHANGE IF WORKS
+    [ContextMenu("Trigger Max Health Adjustment")]
+    public void ChangeHealth()
+    {
+        maxHp = hpAdjust;
+        currentHp = maxHp;
+        OnHealthChangedAction?.Invoke(currentHp, maxHp, 0);
     }
 }
