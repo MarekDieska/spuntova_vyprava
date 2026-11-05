@@ -11,7 +11,7 @@ public class CameraController2D : MonoBehaviour
     [SerializeField] float horizontalSmoothTime = 0.35f;
     [SerializeField] float verticalSmoothTime = 0.6f;
     [SerializeField] float lookAhead = 1.5f;
-    [SerializeField] float lookAheadSmoothTime = 1.5f;
+    [SerializeField] float lookAheadSmoothTime = 0.3f;
     [SerializeField] float jumpFollowHeight = 4f;
     [SerializeField, Range(0.2f, 1f)] float safeArea = 0.8f;
 
@@ -21,7 +21,7 @@ public class CameraController2D : MonoBehaviour
 
     [Header("Zoom")]
     [SerializeField, Min(0.1f)] float size = 8f;
-    [SerializeField, Range(0f, 1f)] float runZoomOut = 0f;
+    [SerializeField, Range(0f, 1f)] float runZoomOut = 0.2f;
     [SerializeField, Range(0f, 1f)] float fallZoomOut = 0.1f;
     [SerializeField] float zoomOutTime = 1.2f;
     [SerializeField] float zoomInTime = 2f;
@@ -30,7 +30,7 @@ public class CameraController2D : MonoBehaviour
     [SerializeField] BoxCollider2D levelBounds = null;
 
     const float MoveThreshold = 1f;
-    const float TurnDelay = 0.4f;
+    const float TurnDelay = 0.15f;
     const float FallSmoothTime = 0.2f;
     const float FallBlendTime = 0.5f;
     const float CatchUpStart = 0.5f;
@@ -39,7 +39,7 @@ public class CameraController2D : MonoBehaviour
     Camera cam;
     Rigidbody2D body;
     float anchorY;
-    float groundY;
+    float peakY;
     float facing = 1f;
     float turnTimer;
     float lookAheadX;
@@ -50,6 +50,8 @@ public class CameraController2D : MonoBehaviour
     Vector3 transitionStart;
     float transitionTime;
     float transitionDuration;
+    bool horizontalLocked;
+    bool wasHorizontalFrozen;
 
     void Reset() => target = FindAnyObjectByType<PlayerMovement>();
 
@@ -76,11 +78,12 @@ public class CameraController2D : MonoBehaviour
 
     public void Snap()
     {
+        UnlockHorizontalMovement();
         if (target == null || cam == null)
             return;
 
         Vector2 player = target.transform.position;
-        anchorY = groundY = player.y;
+        anchorY = peakY = player.y;
         lookAheadX = facing * lookAhead;
         lookAheadVelocity = sizeVelocity = fallWeight = turnTimer = 0f;
         followVelocity = Vector2.zero;
@@ -90,6 +93,13 @@ public class CameraController2D : MonoBehaviour
         transform.position = ClampToBounds(DesiredPosition(player));
     }
 
+    public void RespawnTransition()
+    {
+        anchorY = peakY = target.transform.position.y;
+        fallWeight = 0f;
+        ChangeSection(levelBounds, 0.7f);
+    }
+
     public void ChangeSection(BoxCollider2D newBounds, float duration)
     {
         levelBounds = newBounds;
@@ -97,6 +107,36 @@ public class CameraController2D : MonoBehaviour
         transitionTime = 0f;
         transitionDuration = duration;
         followVelocity = Vector2.zero;
+
+        if (duration <= 0f && levelBounds != null)
+        {
+            target.SetLeftBoundary(levelBounds.bounds.min.x);
+        }
+
+        if (duration > 0f && body != null && !horizontalLocked)
+        {
+            wasHorizontalFrozen = (body.constraints & RigidbodyConstraints2D.FreezePositionX) != 0;
+            body.constraints |= RigidbodyConstraints2D.FreezePositionX;
+            body.linearVelocity = new Vector2(0f, body.linearVelocity.y);
+            horizontalLocked = true;
+        }
+    }
+
+    void OnDisable()
+    {
+        UnlockHorizontalMovement();
+    }
+
+    void UnlockHorizontalMovement()
+    {
+        if (horizontalLocked && body != null)
+        {
+            if (!wasHorizontalFrozen)
+            {
+                body.constraints &= ~RigidbodyConstraints2D.FreezePositionX;
+            }
+            horizontalLocked = false;
+        }
     }
 
     void LateUpdate()
@@ -120,11 +160,19 @@ public class CameraController2D : MonoBehaviour
             float smoothProgress = Mathf.SmoothStep(0f, 1f, progress);
             Vector3 destination = ClampToBounds(DesiredPosition(player));
 
-            // During the transition, the camera can travel between both sections.
             transform.position = Vector3.Lerp(transitionStart, destination, smoothProgress);
+            if (transitionTime >= transitionDuration)
+            {
+                UnlockHorizontalMovement();
+                if (levelBounds != null)
+                {
+                    target.SetLeftBoundary(levelBounds.bounds.min.x);
+                }
+            }
             return;
         }
 
+        UnlockHorizontalMovement();
         Follow(player);
     }
 
@@ -133,7 +181,7 @@ public class CameraController2D : MonoBehaviour
         if (target.IsGrounded || target.IsWallSliding)
         {
             anchorY = player.y;
-            groundY = player.y;
+            peakY = player.y;
         }
         else if (player.y < anchorY)
         {
@@ -143,6 +191,7 @@ public class CameraController2D : MonoBehaviour
         {
             anchorY = player.y - jumpFollowHeight;
         }
+        peakY = Mathf.Max(peakY, player.y);
     }
 
     void UpdateLookAhead(float velocityX, float dt)
@@ -161,14 +210,17 @@ public class CameraController2D : MonoBehaviour
 
     void UpdateFall(Vector2 player, float velocityY, float dt)
     {
-        float fallen = velocityY < 0f ? groundY - player.y : 0f;
+        float fallen = peakY - player.y;
         float desired = Mathf.InverseLerp(longFallDistance * 0.3f, longFallDistance, fallen);
+        float speed = Mathf.InverseLerp(4f, 14f, -velocityY);
+        float screen = Mathf.InverseLerp(0.1f, safeArea, (transform.position.y - player.y) / cam.orthographicSize);
+        desired = velocityY < 0f && !target.IsGrounded ? Mathf.Max(desired, Mathf.Max(speed * 0.7f, screen)) : 0f;
         fallWeight = Mathf.MoveTowards(fallWeight, desired, dt / FallBlendTime);
     }
 
     void UpdateZoom(Vector2 player, float velocityX)
     {
-        float moving = Mathf.Abs(velocityX) > MoveThreshold ? runZoomOut : 0f;
+        float moving = Mathf.InverseLerp(MoveThreshold, 8f, Mathf.Abs(velocityX)) * runZoomOut;
         float zoomOut = Mathf.Max(moving, fallWeight * fallZoomOut);
         float desired = Mathf.Min(BaseSize(player) * (1f + zoomOut), MaxSizeInBounds());
         float smoothTime = desired > cam.orthographicSize ? zoomOutTime : zoomInTime;

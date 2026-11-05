@@ -14,6 +14,7 @@ public class DeathZone : MonoBehaviour
             damageable.TakeDamage(damageAmount);
 
             other.transform.position = resetPosition.position;
+            FindFirstObjectByType<CameraController2D>()?.RespawnTransition();
         }
     }
 }

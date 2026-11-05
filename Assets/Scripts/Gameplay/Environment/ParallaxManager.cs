@@ -24,7 +24,10 @@ public class ParallaxManager : MonoBehaviour
         public Sprite[] sprites;
         public Transform[] objects;
         public SpriteRenderer[,] images;
+        public int[] indices;
         public float[] positions;
+        public int seed;
+        public float offset;
         public float spacing;
         public int copies;
         public float follow;
@@ -32,17 +35,19 @@ public class ParallaxManager : MonoBehaviour
         public float minScale;
         public float maxScale;
         public float bottomY;
+        public bool fadeNearPlayer;
     }
 
     List<MovingLayer> layers = new List<MovingLayer>();
     List<SpriteRenderer> foreground = new List<SpriteRenderer>();
-    float previousCameraX;
+    float startCameraX;
     float startCameraY;
     float screenWidth;
     float foregroundImageHeight;
     float foregroundVisibleHeight;
     SpriteRenderer foregroundFill;
     Sprite fillSprite;
+    Collider2D playerCollider;
 
     void Start()
     {
@@ -57,7 +62,12 @@ public class ParallaxManager : MonoBehaviour
             return;
         }
 
-        previousCameraX = gameCamera.transform.position.x;
+        startCameraX = gameCamera.transform.position.x;
+        PlayerMovement player = FindFirstObjectByType<PlayerMovement>();
+        if (player != null)
+        {
+            playerCollider = player.GetComponent<Collider2D>();
+        }
         startCameraY = gameCamera.transform.position.y;
         screenWidth = gameCamera.orthographicSize * 2f * gameCamera.aspect;
         foregroundVisibleHeight = gameCamera.orthographicSize * 2f * 0.2f;
@@ -65,20 +75,20 @@ public class ParallaxManager : MonoBehaviour
         float bottom = startCameraY - 10f;
         float flowerBottom = lowestLevelY - 3f;
 
-        CreateLayer("VeryFar", veryFar, 4, 0.95f, -30, 0.15f, true, bottom, followY: 0.998f);
+        CreateLayer("VeryFar", veryFar, 4, 0.95f, -30, 0.15f, true, bottom);
         CreateLayer("BetweenTrees", far, 1.5f, 0.9f, -25, 0.85f, true, bottom + 1f,
-            0.5f, 0.7f, 0.994f, 0.72f);
-        CreateLayer("Far", far, 4, 0.85f, -20, 0.55f, true, bottom, followY: 0.99f);
+            0.5f, 0.7f, 0.72f);
+        CreateLayer("Far", far, 4, 0.85f, -20, 0.55f, true, bottom);
         CreateLayer("Vines", vines, 7, 0.85f, -19, 0.8f, true, bottom);
-        CreateLayer("Medium", medium, 1, 0.6f, -10, 0.3f, false, flowerBottom, 0.8f, 1.25f, 0f);
-        CreateLayer("Close", close, 1, 0.35f, -5, 0.7f, false, flowerBottom, 0.9f, 1.5f, 0f);
-        CreateLayer("ForegroundFlowers", close, 0.25f, -0.15f, 50, 0.6f, false,
-            flowerBottom, 1.6f, 2.1f, 0f);
+        CreateLayer("Medium", medium, 1, 0.6f, -10, 0.3f, false, flowerBottom, 0.8f, 1.25f);
+        CreateLayer("Close", close, 1, 0.35f, -5, 0.7f, false, flowerBottom, 0.9f, 1.5f);
+        CreateLayer("ForegroundFlowers", close, 0.16f, -0.15f, 50, 0.6f, false,
+            flowerBottom, 1.6f, 2.1f);
     }
 
     void CreateLayer(string name, Sprite[] sprites, float visibleCount,
         float follow, int order, float offset, bool repeatUp, float bottom,
-        float minScale = 0.7f, float maxScale = 1f, float followY = 0.95f, float opacity = 1f)
+        float minScale = 0.7f, float maxScale = 1f, float opacity = 1f)
     {
         if (sprites == null)
         {
@@ -126,16 +136,26 @@ public class ParallaxManager : MonoBehaviour
         parent.transform.SetParent(transform, false);
         MovingLayer layer = new MovingLayer();
         layer.sprites = valid.ToArray();
-        layer.spacing = screenWidth / visibleCount;
+        float averageWidth = 0f;
+        foreach (Sprite sprite in valid)
+        {
+            averageWidth += sprite.bounds.size.x;
+        }
+        averageWidth /= valid.Count;
+        layer.spacing = Mathf.Max(0.5f, averageWidth * (minScale + maxScale) / Mathf.Sqrt(visibleCount));
+        layer.seed = order;
+        layer.offset = offset;
         layer.copies = copies;
         layer.follow = follow;
-        layer.followY = followY;
+        layer.followY = follow;
         layer.minScale = minScale;
         layer.maxScale = maxScale;
         layer.bottomY = bottom;
-        int count = Mathf.CeilToInt(visibleCount) + 4;
+        layer.fadeNearPlayer = order > 0;
+        int count = Mathf.CeilToInt(screenWidth * 1.5f / layer.spacing) + 12;
         layer.objects = new Transform[count];
         layer.images = new SpriteRenderer[count, copies];
+        layer.indices = new int[count];
         layer.positions = new float[count];
 
         for (int i = 0; i < count; i++)
@@ -143,7 +163,7 @@ public class ParallaxManager : MonoBehaviour
             GameObject obj = new GameObject("Decoration");
             obj.transform.SetParent(parent.transform, false);
             layer.objects[i] = obj.transform;
-            layer.positions[i] = i - 2 + offset + Random.Range(-0.35f, 0.35f);
+            layer.indices[i] = int.MinValue;
 
             for (int copy = 0; copy < copies; copy++)
             {
@@ -151,8 +171,6 @@ public class ParallaxManager : MonoBehaviour
                 renderer.color = new Color(1f, 1f, 1f, opacity);
                 layer.images[i, copy] = renderer;
             }
-
-            ChangeSprite(layer, i);
         }
 
         layers.Add(layer);
@@ -161,60 +179,80 @@ public class ParallaxManager : MonoBehaviour
     void LateUpdate()
     {
         float cameraX = gameCamera.transform.position.x;
-        float movement = cameraX - previousCameraX;
+        float movement = cameraX - startCameraX;
         float verticalMovement = gameCamera.transform.position.y - startCameraY;
 
         foreach (MovingLayer layer in layers)
         {
             float spacing = layer.spacing;
             int count = layer.objects.Length;
+            int firstIndex = Mathf.FloorToInt(movement * (1f - layer.follow) / spacing) - 6;
 
             for (int i = 0; i < count; i++)
             {
-                layer.positions[i] -= movement * (1f - layer.follow) / spacing;
-
-                if (layer.positions[i] < -2f || layer.positions[i] >= count - 2f)
+                int index = firstIndex + i;
+                int slot = (index % count + count) % count;
+                if (layer.indices[slot] != index)
                 {
-                    while (layer.positions[i] < -2f)
-                    {
-                        layer.positions[i] += count;
-                    }
-
-                    while (layer.positions[i] >= count - 2f)
-                    {
-                        layer.positions[i] -= count;
-                    }
-
-                    ChangeSprite(layer, i);
+                    layer.indices[slot] = index;
+                    layer.positions[slot] = LayerPosition(layer, index);
+                    ChangeSprite(layer, slot);
                 }
 
-                float x = cameraX - screenWidth / 2f + layer.positions[i] * spacing;
+                float x = startCameraX - screenWidth / 2f + layer.positions[slot] * spacing + movement * layer.follow;
                 float y = layer.bottomY + verticalMovement * layer.followY;
-                layer.objects[i].position = new Vector3(x, y, 0f);
+                layer.objects[slot].position = new Vector3(x, y, 0f);
+                if (layer.fadeNearPlayer && playerCollider != null)
+                {
+                    for (int copy = 0; copy < layer.copies; copy++)
+                    {
+                        SpriteRenderer renderer = layer.images[slot, copy];
+                        Bounds bounds = renderer.bounds;
+                        bounds.Expand(playerCollider.bounds.size);
+                        float distance = Mathf.Sqrt(bounds.SqrDistance(playerCollider.bounds.center));
+                        float alpha = Mathf.Lerp(0.3f, 1f, Mathf.SmoothStep(0f, 1f,
+                            Mathf.InverseLerp(0.5f, 2.5f, distance)));
+                        Color color = renderer.color;
+                        color.a = Mathf.MoveTowards(color.a, alpha, Time.deltaTime * 4f);
+                        renderer.color = color;
+                    }
+                }
             }
         }
 
         UpdateForeground(cameraX);
-        previousCameraX = cameraX;
+    }
+
+    float LayerPosition(MovingLayer layer, int index)
+    {
+        int group = Mathf.FloorToInt(index / 3f);
+        System.Random random = new System.Random(unchecked(group * 73856093 ^ layer.seed * 19349663));
+        float position = group * 3f + layer.offset + (float)random.NextDouble() * 0.8f;
+        for (int i = 0; i < index - group * 3; i++)
+        {
+            position += 0.3f + (float)random.NextDouble() * 0.5f;
+        }
+        return position;
     }
 
     void ChangeSprite(MovingLayer layer, int index)
     {
-        int spriteIndex = Random.Range(0, layer.sprites.Length);
+        System.Random random = new System.Random(unchecked(layer.indices[index] * 73856093 ^ layer.seed * 19349663));
+        int spriteIndex = random.Next(layer.sprites.Length);
         Sprite sprite = layer.sprites[spriteIndex];
-        bool flipX = Random.value > 0.5f;
+        bool flipX = random.NextDouble() > 0.5;
         float height = sprite.bounds.size.y;
-        float scale = Random.Range(layer.minScale, layer.maxScale);
+        float scale = Mathf.Lerp(layer.minScale, layer.maxScale, (float)random.NextDouble());
         layer.objects[index].localScale = new Vector3(scale, scale, 1f);
         float verticalOffset;
 
         if (layer.copies > 1)
         {
-            verticalOffset = Random.Range(-height * 0.4f, 0f);
+            verticalOffset = Mathf.Lerp(-height * 0.4f, 0f, (float)random.NextDouble());
         }
         else
         {
-            verticalOffset = Random.Range(-height * 0.1f, 0f);
+            verticalOffset = Mathf.Lerp(-height * 0.1f, 0f, (float)random.NextDouble());
         }
 
         for (int copy = 0; copy < layer.copies; copy++)

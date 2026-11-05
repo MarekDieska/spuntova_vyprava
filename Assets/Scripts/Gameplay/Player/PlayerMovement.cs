@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D), typeof(BoxCollider2D), typeof(PlayerInput))]
@@ -53,8 +54,14 @@ public class PlayerMovement : MonoBehaviour
     BoxCollider2D col;
     PlayerInput input;
     Vector2 velocity;
+    MovingPlatform groundPlatform;
+    VerticalPlatform verticalPlatform;
+    Vector2 carriedVelocity;
+    readonly List<RaycastHit2D> castHits = new List<RaycastHit2D>();
+    readonly List<Collider2D> overlapHits = new List<Collider2D>();
 
     float moveInput;
+    float leftBoundary = float.NegativeInfinity;
     bool jumpHeld;
     float lastJumpPressedTime = float.NegativeInfinity;
 
@@ -100,7 +107,8 @@ public class PlayerMovement : MonoBehaviour
 
     void FixedUpdate()
     {
-        velocity = rb.linearVelocity;
+        // Run and jump operate relative to the supporting platform.
+        velocity = rb.linearVelocity - carriedVelocity;
 
         CheckSurroundings();
         Run();
@@ -110,7 +118,37 @@ public class PlayerMovement : MonoBehaviour
         ApplyGravity();
         CorrectCorners();
 
-        rb.linearVelocity = velocity;
+        carriedVelocity = isGrounded && groundPlatform != null && groundPlatform.isActiveAndEnabled
+            ? groundPlatform.Velocity
+            : Vector2.zero;
+        if (isGrounded && verticalPlatform != null && verticalPlatform.isActiveAndEnabled)
+        {
+            carriedVelocity = verticalPlatform.Velocity;
+        }
+        rb.linearVelocity = velocity + carriedVelocity;
+        ApplyLeftBoundary();
+    }
+
+    public void SetLeftBoundary(float x)
+    {
+        leftBoundary = x;
+        ApplyLeftBoundary();
+    }
+
+    void ApplyLeftBoundary()
+    {
+        if (float.IsNegativeInfinity(leftBoundary))
+        {
+            return;
+        }
+
+        float minX = leftBoundary + col.bounds.extents.x - transform.TransformVector(col.offset).x;
+        Vector2 position = rb.position;
+        position.x = Mathf.Max(position.x, minX);
+        rb.position = position;
+        Vector2 currentVelocity = rb.linearVelocity;
+        currentVelocity.x = Mathf.Max(currentVelocity.x, (minX - position.x) / Time.fixedDeltaTime);
+        rb.linearVelocity = currentVelocity;
     }
 
     void CheckSurroundings()
@@ -118,6 +156,8 @@ public class PlayerMovement : MonoBehaviour
         bool wasGrounded = isGrounded;
         isGrounded = false;
         groundNormal = Vector2.up;
+        groundPlatform = null;
+        verticalPlatform = null;
 
         bool justJumped = Time.time - lastJumpTime < JumpGroundIgnoreTime;
         RaycastHit2D ground = Cast(Vector2.down, wasGrounded ? SnapDistance : ContactDistance, 1f);
@@ -125,6 +165,8 @@ public class PlayerMovement : MonoBehaviour
         {
             isGrounded = true;
             groundNormal = ground.normal;
+            groundPlatform = ground.collider.GetComponentInParent<MovingPlatform>();
+            verticalPlatform = ground.collider.GetComponentInParent<VerticalPlatform>();
             lastGroundedTime = Time.time;
             airJumpsLeft = airJumps;
 
@@ -171,7 +213,7 @@ public class PlayerMovement : MonoBehaviour
 
         Vector2 feetSize = new Vector2(b.size.x - 2f * Skin, maxStepHeight);
         Vector2 feetCenter = new Vector2(b.center.x, b.min.y + Skin + maxStepHeight * 0.5f);
-        RaycastHit2D hit = Physics2D.BoxCast(feetCenter, feetSize, 0f, direction, reach, groundLayer);
+        RaycastHit2D hit = CastFrom(feetCenter, feetSize, direction, reach);
         if (!hit || Mathf.Abs(hit.normal.x) < 0.9f)
             return;
 
@@ -315,10 +357,44 @@ public class PlayerMovement : MonoBehaviour
     {
         Bounds b = col.bounds;
         Vector2 size = new Vector2(b.size.x - 2f * Skin, b.size.y * heightScale - 2f * Skin);
-        return Physics2D.BoxCast(b.center, size, 0f, direction, distance + Skin, groundLayer);
+        return CastFrom(b.center, size, direction, distance + Skin);
     }
 
-    bool Overlaps(Vector2 center, Vector2 size) => Physics2D.OverlapBox(center, size, 0f, groundLayer);
+    RaycastHit2D CastFrom(Vector2 center, Vector2 size, Vector2 direction, float distance)
+    {
+        // Moving platforms are solid ground even if their layer is Default.
+        ContactFilter2D filter = new ContactFilter2D { useTriggers = false };
+        Physics2D.BoxCast(center, size, 0f, direction, filter, castHits, distance);
+        RaycastHit2D nearest = default;
+        foreach (RaycastHit2D hit in castHits)
+        {
+            if (IsGroundCollider(hit.collider) && (!nearest || hit.distance < nearest.distance))
+                nearest = hit;
+        }
+        return nearest;
+    }
+
+    bool IsGroundCollider(Collider2D candidate)
+    {
+        if (candidate.attachedRigidbody == rb || candidate.transform.IsChildOf(transform))
+            return false;
+
+        return (groundLayer.value & (1 << candidate.gameObject.layer)) != 0 ||
+            candidate.GetComponentInParent<MovingPlatform>() != null ||
+            candidate.GetComponentInParent<VerticalPlatform>() != null;
+    }
+
+    bool Overlaps(Vector2 center, Vector2 size)
+    {
+        ContactFilter2D filter = new ContactFilter2D { useTriggers = false };
+        Physics2D.OverlapBox(center, size, 0f, filter, overlapHits);
+        foreach (Collider2D hit in overlapHits)
+        {
+            if (IsGroundCollider(hit))
+                return true;
+        }
+        return false;
+    }
 
     void OnDrawGizmosSelected()
     {
