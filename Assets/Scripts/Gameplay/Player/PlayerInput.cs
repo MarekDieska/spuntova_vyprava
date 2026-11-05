@@ -10,17 +10,15 @@ public class PlayerInput : MonoBehaviour
     [Header("Light Input")]
     [SerializeField] private InputActionReference lightAction;
     [SerializeField] private InputActionReference aimPositionAction;
-    [SerializeField] private InputActionReference lightToggleAction;    [SerializeField] private InputActionReference grappleAction;
+    [SerializeField] private InputActionReference lightToggleAction;
     [SerializeField] private InputActionReference grappleAction;
-
-
+    
     public float MoveInput { get; private set; }
     public bool JumpHeld { get; private set; }
     public bool JumpPressedThisFrame { get; private set; }
     public bool LightHeld { get; private set; }
     public bool LightTogglePressedThisFrame { get; private set; }
     public Vector2 MouseScreenPosition { get; private set; }
-    public bool GrapplePressedThisFrame { get; private set; }
     public bool GrapplePressedThisFrame { get; private set; }
 
     private void OnEnable()
@@ -51,7 +49,6 @@ public class PlayerInput : MonoBehaviour
         LightHeld = lightAction.action.IsPressed();
         LightTogglePressedThisFrame = lightToggleAction.action.WasPressedThisFrame();
         MouseScreenPosition = aimPositionAction.action.ReadValue<Vector2>();
-        GrapplePressedThisFrame = grappleAction.action.WasPerformedThisFrame();
         GrapplePressedThisFrame = grappleAction.action.WasPerformedThisFrame();
     }
 }

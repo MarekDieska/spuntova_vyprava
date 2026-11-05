@@ -3461,7 +3461,16 @@ MonoBehaviour:
   - {x: 0.5, y: 0.5, z: 0}
   - {x: -0.5, y: 0.5, z: 0}
 <<<<<<< HEAD
+<<<<<<< HEAD
 --- !u!1 &1174685683
+=======
+--- !u!4 &1223977216 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 2103913916068284356, guid: cbb03a2afaae01f489c370fcefacd5e4, type: 3}
+  m_PrefabInstance: {fileID: 373816424236199049}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &1259400647
+>>>>>>> 65cd2d5b666ac5168b2708ae0061929005f5e1bb
 GameObject:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
