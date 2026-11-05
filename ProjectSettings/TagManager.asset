@@ -12,7 +12,7 @@ TagManager:
   - Ground
   - Water
   - UI
-  - 
+  - GrapplePoint
   - 
   - 
   - 
@@ -42,8 +42,17 @@ TagManager:
   - name: Default
     uniqueID: 0
     locked: 0
+  - name: RainBack
+    uniqueID: 3666574525
+    locked: 0
   - name: Player
     uniqueID: 3001401115
+    locked: 0
+  - name: Ground
+    uniqueID: 3417609691
+    locked: 0
+  - name: RainFront
+    uniqueID: 3523448567
     locked: 0
   m_RenderingLayers:
   - Default
