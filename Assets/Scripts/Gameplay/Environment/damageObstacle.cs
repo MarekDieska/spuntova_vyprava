@@ -5,6 +5,14 @@ public class damageObstacle : MonoBehaviour
     [SerializeField] private Transform resetPosition;
     [SerializeField] private int damageAmount = 1;
 
+    private void Awake()
+    {
+        if (resetPosition == null)
+        {
+            resetPosition = transform.Find("ResetPosition");
+        }
+    }
+
     private void OnTriggerEnter2D(Collider2D other)
     {
         RespawnPlayer(other);
