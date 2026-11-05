@@ -125,6 +125,16 @@
                     "interactions": "",
                     "initialStateCheck": false,
                     "priority": 0
+                },
+                {
+                    "name": "GrapplingHook",
+                    "type": "Button",
+                    "id": "2f2df3b8-9ea0-4f09-9ebd-b3af9fdd9ce4",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false,
+                    "priority": 0
                 }
             ],
             "bindings": [
@@ -517,7 +527,6 @@
                     "name": "",
                     "id": "592455ee-abe4-4fa9-8e7b-4bc337f61702",
                     "path": "<Mouse>/leftButton",
-                    "path": "<Mouse>/leftButton",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -555,6 +564,17 @@
                     "processors": "",
                     "groups": ";Gamepad",
                     "action": "AimLight",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f3885874-d0fa-4a50-b9bc-5413a403b058",
+                    "path": "<Keyboard>/g",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "GrapplingHook",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
