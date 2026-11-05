@@ -127,9 +127,9 @@
                     "priority": 0
                 },
                 {
-                    "name": "UseGrapple",
+                    "name": "GrapplingHook",
                     "type": "Button",
-                    "id": "0907fb38-aa72-4529-be73-cd744a0b57a8",
+                    "id": "2f2df3b8-9ea0-4f09-9ebd-b3af9fdd9ce4",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -459,17 +459,6 @@
                 },
                 {
                     "name": "",
-                    "id": "a320069b-d35f-467a-82cd-7dde0811c3ba",
-                    "path": "<Keyboard>/w",
-                    "interactions": "",
-                    "processors": "",
-                    "groups": ";Keyboard&Mouse",
-                    "action": "Jump",
-                    "isComposite": false,
-                    "isPartOfComposite": false
-                },
-                {
-                    "name": "",
                     "id": "1534dc16-a6aa-499d-9c3a-22b47347b52a",
                     "path": "<Keyboard>/1",
                     "interactions": "",
@@ -538,7 +527,6 @@
                     "name": "",
                     "id": "592455ee-abe4-4fa9-8e7b-4bc337f61702",
                     "path": "<Mouse>/leftButton",
-                    "path": "<Mouse>/leftButton",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -570,12 +558,23 @@
                 },
                 {
                     "name": "",
-                    "id": "2c8f389c-7204-445e-8365-0f35f5883843",
+                    "id": "f49d0b4a-71ce-48fc-802a-b7cbdf80fbc4",
+                    "path": "<Gamepad>/rightStick",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": ";Gamepad",
+                    "action": "AimLight",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "f3885874-d0fa-4a50-b9bc-5413a403b058",
                     "path": "<Keyboard>/g",
                     "interactions": "",
                     "processors": "",
-                    "groups": "",
-                    "action": "UseGrapple",
+                    "groups": ";Keyboard&Mouse",
+                    "action": "GrapplingHook",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }
