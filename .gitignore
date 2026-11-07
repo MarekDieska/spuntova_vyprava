@@ -116,4 +116,4 @@ InitTestScene*.unity*
 #Mac generated files
 *.DS_STORE
 
-.vscode
+.vscode/
