@@ -52,6 +52,8 @@ public class CameraController2D : MonoBehaviour
     float transitionDuration;
     bool horizontalLocked;
     bool wasHorizontalFrozen;
+    float shakeTime;
+    Vector3 shakeOffset;
 
     void Reset() => target = FindAnyObjectByType<PlayerMovement>();
 
@@ -78,6 +80,8 @@ public class CameraController2D : MonoBehaviour
 
     public void Snap()
     {
+        transform.position -= shakeOffset;
+        shakeOffset = Vector3.zero;
         UnlockHorizontalMovement();
         if (target == null || cam == null)
             return;
@@ -103,7 +107,7 @@ public class CameraController2D : MonoBehaviour
     public void ChangeSection(BoxCollider2D newBounds, float duration)
     {
         levelBounds = newBounds;
-        transitionStart = transform.position;
+        transitionStart = transform.position - shakeOffset;
         transitionTime = 0f;
         transitionDuration = duration;
         followVelocity = Vector2.zero;
@@ -124,7 +128,25 @@ public class CameraController2D : MonoBehaviour
 
     void OnDisable()
     {
+        transform.position -= shakeOffset;
+        shakeOffset = Vector3.zero;
+        shakeTime = 0f;
         UnlockHorizontalMovement();
+    }
+
+    public void Shake()
+    {
+        shakeTime = 0.2f;
+    }
+
+    void ApplyShake()
+    {
+        float strength = shakeTime / 0.2f;
+        float phase = (1f - strength) * Mathf.PI;
+        shakeOffset = new Vector3(Mathf.Cos(phase * 6f), Mathf.Sin(phase * 8f) * 0.6f, 0f)
+            * (cam.orthographicSize * 0.03f * strength);
+        shakeTime = Mathf.Max(0f, shakeTime - Time.deltaTime);
+        transform.position += shakeOffset;
     }
 
     void UnlockHorizontalMovement()
@@ -141,6 +163,8 @@ public class CameraController2D : MonoBehaviour
 
     void LateUpdate()
     {
+        transform.position -= shakeOffset;
+        shakeOffset = Vector3.zero;
         float dt = Time.deltaTime;
         if (target == null || dt <= 0f)
             return;
@@ -161,6 +185,7 @@ public class CameraController2D : MonoBehaviour
             Vector3 destination = ClampToBounds(DesiredPosition(player));
 
             transform.position = Vector3.Lerp(transitionStart, destination, smoothProgress);
+            ApplyShake();
             if (transitionTime >= transitionDuration)
             {
                 UnlockHorizontalMovement();
@@ -174,6 +199,7 @@ public class CameraController2D : MonoBehaviour
 
         UnlockHorizontalMovement();
         Follow(player);
+        ApplyShake();
     }
 
     void UpdateAnchor(Vector2 player)

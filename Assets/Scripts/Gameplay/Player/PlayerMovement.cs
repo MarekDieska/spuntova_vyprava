@@ -36,6 +36,11 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] float cornerCorrection = 0.25f;
     [SerializeField] float maxStepHeight = 0.15f;
 
+    [Header("Footsteps")]
+    [SerializeField] AudioClip footstepSound;
+    [SerializeField, Range(0f, 1f)] float footstepVolume = 0.5f;
+    [SerializeField, Min(0.1f)] float footstepInterval = 0.28f;
+
     public bool IsGrounded => isGrounded;
     public bool IsWallSliding => isWallSliding;
     public Vector2 Velocity => velocity;
@@ -54,6 +59,8 @@ public class PlayerMovement : MonoBehaviour
     Rigidbody2D rb;
     BoxCollider2D col;
     PlayerInput input;
+    AudioSource footstepSource;
+    float nextFootstepTime;
     Vector2 velocity;
     MovingPlatform groundPlatform;
     VerticalPlatform verticalPlatform;
@@ -89,6 +96,13 @@ public class PlayerMovement : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         col = GetComponent<BoxCollider2D>();
         input = GetComponent<PlayerInput>();
+        footstepSource = gameObject.AddComponent<AudioSource>();
+        footstepSource.playOnAwake = false;
+        footstepSource.loop = false;
+        if (footstepSound != null)
+        {
+            footstepSound.LoadAudioData();
+        }
 
         State = PlayerState.Normal;
 
@@ -110,6 +124,36 @@ public class PlayerMovement : MonoBehaviour
         if (input.JumpPressedThisFrame)
         {
             lastJumpPressedTime = Time.time;
+        }
+    }
+
+    void LateUpdate()
+    {
+        bool walking = footstepSound != null && isGrounded && MoveInput != 0f &&
+            State == PlayerState.Normal && Time.timeScale > 0f &&
+            (rb.constraints & RigidbodyConstraints2D.FreezePositionX) == 0 &&
+            Mathf.Abs(rb.linearVelocity.x - carriedVelocity.x) > 0.1f;
+
+        if (!walking)
+        {
+            footstepSource.Stop();
+            return;
+        }
+
+        footstepSource.volume = footstepVolume;
+        if (Time.time >= nextFootstepTime)
+        {
+            footstepSource.pitch = Random.Range(0.82f, 1.04f);
+            footstepSource.PlayOneShot(footstepSound);
+            nextFootstepTime = Time.time + footstepInterval;
+        }
+    }
+
+    void OnDisable()
+    {
+        if (footstepSource != null)
+        {
+            footstepSource.Stop();
         }
     }
 
