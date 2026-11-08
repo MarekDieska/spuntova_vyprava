@@ -4,7 +4,6 @@ using UnityEngine;
 public class DeathZone : MonoBehaviour
 {
 
-    [SerializeField] private Transform resetPosition;
     [SerializeField] private int damageAmount = 1;
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -12,9 +11,10 @@ public class DeathZone : MonoBehaviour
         if (other.TryGetComponent(out IDamageable damageable))
         {
             damageable.TakeDamage(damageAmount);
-
-            other.transform.position = resetPosition.position;
-            FindFirstObjectByType<CameraController2D>()?.RespawnTransition();
+        }
+        if (other.TryGetComponent(out PlayerHealth playerHealth))
+        {
+            playerHealth.Respawn();
         }
     }
 }

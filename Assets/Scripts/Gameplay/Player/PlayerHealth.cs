@@ -9,14 +9,21 @@ public class PlayerHealth : MonoBehaviour, IDamageable
 
     private int currentHp;
     private bool isInvincible = false;
+    private Vector2 currentRespawnPosition;
+    private CameraController2D cameraController;
 
     private void Awake()
     {
         currentHp = maxHp;
+        if (Camera.main != null)
+        {
+            cameraController = Camera.main.GetComponent<CameraController2D>();
+        }
     }
     private void Start()
     {
         OnHealthChangedAction?.Invoke(currentHp, maxHp, 0);
+        currentRespawnPosition = transform.position;
     }
     public void TakeDamage(int amount)
     {
@@ -33,6 +40,18 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     public void SetInvincible(bool state)
     {
         isInvincible = state;
+    }
+    public void SetRespawnPoint(Vector2 newPosition)
+    {
+        currentRespawnPosition = newPosition;
+    }
+    public void Respawn()
+    {
+        transform.position = currentRespawnPosition;
+        if (cameraController != null)
+        {
+            cameraController.RespawnTransition();
+        }
     }
 
     [SerializeField] private int hpAdjust = 1;

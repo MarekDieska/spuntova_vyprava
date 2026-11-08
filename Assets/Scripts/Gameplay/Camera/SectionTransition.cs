@@ -2,9 +2,10 @@ using UnityEngine;
 
 public class SectionTransition : MonoBehaviour
 {
-    public CameraController2D cameraController;
-    public BoxCollider2D nextSectionBounds;
-    public float duration = 0.7f;
+    [SerializeField] private CameraController2D cameraController;
+    [SerializeField] private BoxCollider2D nextSectionBounds;
+    [SerializeField] private float duration = 0.7f;
+    [SerializeField] private Transform nextRoomRespawnPoint;
     private bool used;
 
     void OnTriggerEnter2D(Collider2D other)
@@ -12,6 +13,10 @@ public class SectionTransition : MonoBehaviour
         if (!used && !other.isTrigger && other.TryGetComponent<PlayerMovement>(out _))
         {
             used = true;
+            if (other.TryGetComponent<PlayerHealth>(out PlayerHealth playerHealth))
+            {
+                playerHealth.SetRespawnPoint(nextRoomRespawnPoint.position);
+            }
             cameraController.ChangeSection(nextSectionBounds, duration);
             gameObject.SetActive(false);
         }

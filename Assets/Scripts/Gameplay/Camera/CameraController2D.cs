@@ -97,7 +97,7 @@ public class CameraController2D : MonoBehaviour
     {
         anchorY = peakY = target.transform.position.y;
         fallWeight = 0f;
-        ChangeSection(levelBounds, 0.7f);
+        ChangeSection(levelBounds, 0.5f);
     }
 
     public void ChangeSection(BoxCollider2D newBounds, float duration)
