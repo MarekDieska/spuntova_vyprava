@@ -3,6 +3,124 @@ using UnityEngine;
 
 public class ParallaxManager : MonoBehaviour
 {
+    [System.Serializable]
+    public class ParallaxLayer
+    {
+        public string name = "Layer";
+        public Sprite sprite;
+        [Range(0f, 1f)] public float follow = 0.5f;
+        [Range(0f, 1f)] public float followY = 0f;
+        public float y = 0f;
+        public float scale = 1f;
+        public string sortingLayer = "Default";
+        public int sortingOrder = -10;
+
+        [HideInInspector] public List<SpriteRenderer> renderers = new List<SpriteRenderer>();
+        [HideInInspector] public float tileWidth;
+    }
+
+    [SerializeField] Camera gameCamera;
+    [SerializeField] ParallaxLayer[] layers;
+
+    float startCameraX;
+    float startCameraY;
+
+    void Start()
+    {
+        if (gameCamera == null)
+        {
+            gameCamera = Camera.main;
+        }
+
+        /*if (gameCamera == null || !gameCamera.orthographic)
+        {
+            Debug.LogError("ParallaxManager potrebuje ortograficku kameru.", this);
+            enabled = false;
+            return;
+        }*/
+
+        startCameraX = gameCamera.transform.position.x;
+        startCameraY = gameCamera.transform.position.y;
+
+        foreach (ParallaxLayer layer in layers)
+        {
+            if (layer.sprite == null || layer.scale <= 0f)
+            {
+                continue;
+            }
+
+            layer.tileWidth = layer.sprite.bounds.size.x * layer.scale;
+            if (layer.tileWidth <= 0f)
+            {
+                continue;
+            }
+
+            float screenWidth = gameCamera.orthographicSize * 2f * gameCamera.aspect;
+            int count = Mathf.CeilToInt(screenWidth / layer.tileWidth) + 3;
+
+            GameObject parent = new GameObject(layer.name);
+            parent.transform.SetParent(transform, false);
+
+            for (int i = 0; i < count; i++)
+            {
+                GameObject tile = new GameObject("Tile " + i);
+                tile.transform.SetParent(parent.transform, false);
+                tile.transform.localScale = new Vector3(layer.scale, layer.scale, 1f);
+
+                SpriteRenderer renderer = tile.AddComponent<SpriteRenderer>();
+                renderer.sprite = layer.sprite;
+                renderer.sortingLayerName = layer.sortingLayer;
+                renderer.sortingOrder = layer.sortingOrder;
+                layer.renderers.Add(renderer);
+            }
+        }
+
+        UpdateLayers();
+    }
+
+    void LateUpdate()
+    {
+        UpdateLayers();
+    }
+
+    void UpdateLayers()
+    {
+        float cameraX = gameCamera.transform.position.x;
+        float cameraY = gameCamera.transform.position.y;
+        float halfWidth = gameCamera.orthographicSize * gameCamera.aspect;
+
+        foreach (ParallaxLayer layer in layers)
+        {
+            if (layer.renderers.Count == 0)
+            {
+                continue;
+            }
+
+            float parallaxX = (cameraX - startCameraX) * layer.follow;
+            float parallaxY = (cameraY - startCameraY) * layer.followY;
+            float anchorX = startCameraX + parallaxX;
+            float relativeLeft = cameraX - halfWidth - anchorX;
+            int firstTile = Mathf.FloorToInt(relativeLeft / layer.tileWidth) - 1;
+
+            for (int i = 0; i < layer.renderers.Count; i++)
+            {
+                // Kopie sa vzdy skladaju vedla seba, bez nahodnych medzier.
+                float pivotOffset = layer.sprite.pivot.x / layer.sprite.rect.width;
+                float x = anchorX + (firstTile + i + pivotOffset) * layer.tileWidth;
+                float y = layer.y + parallaxY;
+                layer.renderers[i].transform.position = new Vector3(x, y, 0f);
+            }
+        }
+    }
+}
+
+/*
+================ POVODNY PARALLAX MANAGER (ARCHIV) ================
+using System.Collections.Generic;
+using UnityEngine;
+
+public class ParallaxManager : MonoBehaviour
+{
 
 
     //KOD ESTE MENIM PRERABAM UPRAVUJEM, NEODPORUCAM DONHO POZERAT
@@ -373,3 +491,5 @@ public class ParallaxManager : MonoBehaviour
         return renderer;
     }
 }
+
+*/
