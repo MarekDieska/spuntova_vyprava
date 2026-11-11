@@ -2,7 +2,7 @@ using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 
-[RequireComponent(typeof(SpriteRenderer), typeof(PlayerHealth))]
+[RequireComponent(typeof(PlayerHealth))]
 public class PlayerDamageVisuals : MonoBehaviour
 {
     [Header("Invincibility Settings")]
@@ -18,7 +18,7 @@ public class PlayerDamageVisuals : MonoBehaviour
 
     private void Awake()
     {
-        sr = GetComponent<SpriteRenderer>();
+        sr = GetComponentInChildren<SpriteRenderer>();
         health = GetComponent<PlayerHealth>();
         cameraController = Camera.main != null
             ? Camera.main.GetComponent<CameraController2D>()
