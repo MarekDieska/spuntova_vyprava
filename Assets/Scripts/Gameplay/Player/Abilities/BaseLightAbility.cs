@@ -20,6 +20,9 @@ public abstract class BaseLightAbility : MonoBehaviour
     protected bool isLightActive;
     protected bool isOverheated;
 
+    public bool IsShining => isActiveAndEnabled && abilityLight != null && abilityLight.isActiveAndEnabled;
+    public Vector2 AimDirection { get; protected set; }
+
     protected virtual void Awake()
     {
         input = GetComponent<PlayerInput>();

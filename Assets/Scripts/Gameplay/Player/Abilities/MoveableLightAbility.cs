@@ -18,6 +18,7 @@ public class MovableLightAbility : BaseLightAbility
         if (abilityLight != null)
         {
             abilityLight.transform.position = mouseWorldPos;
+            AimDirection = mouseWorldPos - transform.position;
         }
     }
 }

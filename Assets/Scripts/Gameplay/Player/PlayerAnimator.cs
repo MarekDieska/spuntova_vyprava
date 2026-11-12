@@ -6,6 +6,8 @@ public class PlayerAnimator : MonoBehaviour
     private Animator animator;
     private PlayerMovement playerMovement;
     private PlayerInput playerInput;
+    private ConeLightAbility coneLight;
+    private MovableLightAbility movableLight;
     private static readonly int IsMovingHash = Animator.StringToHash("IsMoving");
     private static readonly int IsLightHash = Animator.StringToHash("IsLight");
     private float currentFacingDirection = 1f;
@@ -14,11 +16,17 @@ public class PlayerAnimator : MonoBehaviour
         animator = GetComponent<Animator>();
         playerMovement = GetComponentInParent<PlayerMovement>();
         playerInput = GetComponentInParent<PlayerInput>();
+        coneLight = GetComponentInParent<ConeLightAbility>();
+        movableLight = GetComponentInParent<MovableLightAbility>();
     }
 
     private void Update()
     {
         UpdateAnimationParameters();
+    }
+
+    private void LateUpdate()
+    {
         HandleVisualFlipping();
     }
 
@@ -44,15 +52,21 @@ public class PlayerAnimator : MonoBehaviour
     }
     private void HandleVisualFlipping()
     {
+        float facingInput = playerMovement.MoveInput;
+        if (coneLight != null && coneLight.IsShining)
+        {
+            facingInput = coneLight.AimDirection.normalized.x;
+        }
+        else if (movableLight != null && movableLight.IsShining)
+        {
+            facingInput = movableLight.AimDirection.normalized.x;
+        }
 
-        float moveDir = playerMovement.MoveInput;
-
-        // Check horizontal movement direction
-        if (moveDir > 0.01f && currentFacingDirection != 1f)
+        if (facingInput > 0.01f && currentFacingDirection != 1f)
         {
             SetFacingDirection(1f);
         }
-        else if (moveDir < -0.01f && currentFacingDirection != -1f)
+        else if (facingInput < -0.01f && currentFacingDirection != -1f)
         {
             SetFacingDirection(-1f);
         }
