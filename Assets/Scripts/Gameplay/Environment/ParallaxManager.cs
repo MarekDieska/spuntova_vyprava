@@ -11,6 +11,7 @@ public class ParallaxManager : MonoBehaviour
         [Range(0f, 1f)] public float follow = 0.5f;
         [Range(0f, 1f)] public float followY = 0f;
         public float y = 0f;
+        public float z = 0f;
         public float scale = 1f;
         public string sortingLayer = "Default";
         public int sortingOrder = -10;
@@ -20,8 +21,8 @@ public class ParallaxManager : MonoBehaviour
     }
 
     [SerializeField] Camera gameCamera;
+    [SerializeField] private Material mat;
     [SerializeField] ParallaxLayer[] layers;
-
     float startCameraX;
     float startCameraY;
 
@@ -31,13 +32,6 @@ public class ParallaxManager : MonoBehaviour
         {
             gameCamera = Camera.main;
         }
-
-        /*if (gameCamera == null || !gameCamera.orthographic)
-        {
-            Debug.LogError("ParallaxManager potrebuje ortograficku kameru.", this);
-            enabled = false;
-            return;
-        }*/
 
         startCameraX = gameCamera.transform.position.x;
         startCameraY = gameCamera.transform.position.y;
@@ -60,6 +54,7 @@ public class ParallaxManager : MonoBehaviour
 
             GameObject parent = new GameObject(layer.name);
             parent.transform.SetParent(transform, false);
+            parent.transform.localPosition = new Vector3(0f, 0f, layer.z);
 
             for (int i = 0; i < count; i++)
             {
@@ -69,6 +64,7 @@ public class ParallaxManager : MonoBehaviour
 
                 SpriteRenderer renderer = tile.AddComponent<SpriteRenderer>();
                 renderer.sprite = layer.sprite;
+                renderer.sharedMaterial = mat;
                 renderer.sortingLayerName = layer.sortingLayer;
                 renderer.sortingOrder = layer.sortingOrder;
                 layer.renderers.Add(renderer);
@@ -104,11 +100,10 @@ public class ParallaxManager : MonoBehaviour
 
             for (int i = 0; i < layer.renderers.Count; i++)
             {
-                // Kopie sa vzdy skladaju vedla seba, bez nahodnych medzier.
                 float pivotOffset = layer.sprite.pivot.x / layer.sprite.rect.width;
                 float x = anchorX + (firstTile + i + pivotOffset) * layer.tileWidth;
                 float y = layer.y + parallaxY;
-                layer.renderers[i].transform.position = new Vector3(x, y, 0f);
+                layer.renderers[i].transform.position = new Vector3(x, y, layer.z);
             }
         }
     }
