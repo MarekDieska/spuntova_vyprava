@@ -251,7 +251,6 @@ public class TilemapGrass : MonoBehaviour
         float visibleRight = cameraX + halfWidth;
         float buffer = Mathf.Max(2f, halfWidth * 0.5f);
 
-        // One full camera width (or more) of empty space between flower edges.
         float screenWidth = 2f * halfWidth;
         float minGap = Mathf.Max(1f, closeMinGapScreens) * screenWidth;
         float maxGap = Mathf.Max(minGap, closeMaxGapScreens * screenWidth);
@@ -288,7 +287,6 @@ public class TilemapGrass : MonoBehaviour
             tile.renderer.sortingLayerName = closeSortingLayer;
             tile.renderer.sortingOrder = closeSortingOrder;
             tile.transform.localScale = new Vector3(closeScale, closeScale, 1f);
-            // Sprite bounds min compensates for arbitrary pivot location.
             float leftOffset = sprite.bounds.min.x * closeScale;
             tile.transform.position = new Vector3(cursor - leftOffset, anchorY, 0f);
             tile.transform.gameObject.SetActive(true);
@@ -343,7 +341,6 @@ public class TilemapGrass : MonoBehaviour
         float alpha = 1f;
         if (player != null && transparencyDistance > 0f)
         {
-            // Distance to the sprite rectangle, not merely to its pivot.
             Bounds bounds = tile.renderer.bounds;
             float nearestX = Mathf.Clamp(player.position.x, bounds.min.x, bounds.max.x);
             float nearestY = Mathf.Clamp(player.position.y, bounds.min.y, bounds.max.y);

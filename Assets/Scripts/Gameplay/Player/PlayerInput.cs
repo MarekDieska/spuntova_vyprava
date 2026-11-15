@@ -14,6 +14,7 @@ public class PlayerInput : MonoBehaviour
     [SerializeField] private InputActionReference grappleAction;
     
     public float MoveInput { get; private set; }
+    public float VerticalInput { get; private set; }
     public bool JumpHeld { get; private set; }
     public bool JumpPressedThisFrame { get; private set; }
     public bool LightHeld { get; private set; }
@@ -43,7 +44,9 @@ public class PlayerInput : MonoBehaviour
 
     private void Update()
     {
-        MoveInput = moveAction.action.ReadValue<Vector2>().x;
+        Vector2 move = moveAction.action.ReadValue<Vector2>();
+        MoveInput = move.x;
+        VerticalInput = move.y;
         JumpHeld = jumpAction.action.IsPressed();
         JumpPressedThisFrame = jumpAction.action.WasPressedThisFrame();
         LightHeld = lightAction.action.IsPressed();

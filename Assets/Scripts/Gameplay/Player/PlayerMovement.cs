@@ -1,10 +1,11 @@
 using System.Collections.Generic;
-using Unity.VisualScripting;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D), typeof(BoxCollider2D), typeof(PlayerInput))]
 public class PlayerMovement : MonoBehaviour
 {
+    public enum PlayerState { Normal, Grappled }
+
     [Header("Collision")]
     [SerializeField] LayerMask groundLayer;
     [SerializeField, Range(0f, 89f)] float maxSlopeAngle = 50f;
@@ -36,58 +37,64 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] float cornerCorrection = 0.25f;
     [SerializeField] float maxStepHeight = 0.15f;
 
-    [Header("Footsteps")]
-    [SerializeField] AudioClip footstepSound;
-    [SerializeField, Range(0f, 1f)] float footstepVolume = 0.5f;
-    [SerializeField, Min(0.1f)] float footstepInterval = 0.28f;
-
-    public bool IsGrounded => isGrounded;
-    public bool IsWallSliding => isWallSliding;
-    public Vector2 Velocity => velocity;
-
     const float ContactDistance = 0.05f;
     const float SnapDistance = 0.3f;
     const float JumpGroundIgnoreTime = 0.1f;
     const float WallJumpDistance = 0.25f;
+    const float WallCheckHeight = 0.6f;
+    const float WallNormalThreshold = 0.9f;
     const float Skin = 0.02f;
     const float GroundStickSpeed = 1f;
     const float ApexSpeed = 2f;
     const float ApexGravityMultiplier = 0.5f;
     const float CornerStep = 0.02f;
     const float StickDeadZone = 0.3f;
+    const float WalkSpeedThreshold = 0.1f;
+    const float DropInputThreshold = 0.5f;
+    const float DropThroughTime = 0.2f;
+
+    readonly List<RaycastHit2D> castHits = new List<RaycastHit2D>();
+    readonly List<Collider2D> overlapHits = new List<Collider2D>();
+    readonly List<Collider2D> droppedPlatforms = new List<Collider2D>();
+    readonly ContactFilter2D solidFilter = new ContactFilter2D { useTriggers = false };
 
     Rigidbody2D rb;
     BoxCollider2D col;
     PlayerInput input;
-    AudioSource footstepSource;
-    float nextFootstepTime;
+
     Vector2 velocity;
-    MovingPlatform groundPlatform;
-    VerticalPlatform verticalPlatform;
     Vector2 carriedVelocity;
-    readonly List<RaycastHit2D> castHits = new List<RaycastHit2D>();
-    readonly List<Collider2D> overlapHits = new List<Collider2D>();
-
-    float moveInput;
-    float leftBoundary = float.NegativeInfinity;
-    public float MoveInput { get; private set; }
-    bool jumpHeld;
-    float lastJumpPressedTime = float.NegativeInfinity;
-
-    float lastGroundedTime = float.NegativeInfinity;
-    float wallJumpTime = float.NegativeInfinity;
-    float lastJumpTime = float.NegativeInfinity;
+    Vector2 groundVelocity;
     Vector2 groundNormal = Vector2.up;
+    float moveInput;
+    float fallSpeed;
+    bool jumpHeld;
+    bool dropHeld;
     bool isGrounded;
     bool isWallSliding;
     bool canCutJump;
     int airJumpsLeft;
+    float leftBoundary = float.NegativeInfinity;
+    float lastJumpPressedTime = float.NegativeInfinity;
+    float lastGroundedTime = float.NegativeInfinity;
+    float lastJumpTime = float.NegativeInfinity;
+    float wallJumpTime = float.NegativeInfinity;
+    float lastDropTime = float.NegativeInfinity;
 
-    float Gravity => 2f * jumpHeight / (timeToApex * timeToApex);
-
-    public enum PlayerState { Normal, Grappled }
+    public event System.Action<float> Landed;
 
     public PlayerState State { get; set; }
+    public float MoveInput => moveInput;
+    public bool IsGrounded => isGrounded;
+    public bool IsWallSliding => isWallSliding;
+    public Vector2 Velocity => velocity;
+
+    public bool IsWalking =>
+        isActiveAndEnabled && isGrounded && moveInput != 0f && State == PlayerState.Normal &&
+        (rb.constraints & RigidbodyConstraints2D.FreezePositionX) == 0 &&
+        Mathf.Abs(rb.linearVelocity.x - carriedVelocity.x) > WalkSpeedThreshold;
+
+    float Gravity => 2f * jumpHeight / (timeToApex * timeToApex);
 
     void Reset() => groundLayer = LayerMask.GetMask("Ground");
 
@@ -96,15 +103,6 @@ public class PlayerMovement : MonoBehaviour
         rb = GetComponent<Rigidbody2D>();
         col = GetComponent<BoxCollider2D>();
         input = GetComponent<PlayerInput>();
-        footstepSource = gameObject.AddComponent<AudioSource>();
-        footstepSource.playOnAwake = false;
-        footstepSource.loop = false;
-        if (footstepSound != null)
-        {
-            footstepSound.LoadAudioData();
-        }
-
-        State = PlayerState.Normal;
 
         rb.gravityScale = 0f;
         rb.freezeRotation = true;
@@ -117,49 +115,16 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
-        // Read from PlayerInput every frame so we don't drop button presses
-        MoveInput = Mathf.Abs(input.MoveInput) < StickDeadZone ? 0f : Mathf.Sign(input.MoveInput);
+        moveInput = Mathf.Abs(input.MoveInput) < StickDeadZone ? 0f : Mathf.Sign(input.MoveInput);
         jumpHeld = input.JumpHeld;
+        dropHeld = input.VerticalInput < -DropInputThreshold;
 
         if (input.JumpPressedThisFrame)
-        {
             lastJumpPressedTime = Time.time;
-        }
-    }
-
-    void LateUpdate()
-    {
-        bool walking = footstepSound != null && isGrounded && MoveInput != 0f &&
-            State == PlayerState.Normal && Time.timeScale > 0f &&
-            (rb.constraints & RigidbodyConstraints2D.FreezePositionX) == 0 &&
-            Mathf.Abs(rb.linearVelocity.x - carriedVelocity.x) > 0.1f;
-
-        if (!walking)
-        {
-            footstepSource.Stop();
-            return;
-        }
-
-        footstepSource.volume = footstepVolume;
-        if (Time.time >= nextFootstepTime)
-        {
-            footstepSource.pitch = Random.Range(0.82f, 1.04f);
-            footstepSource.PlayOneShot(footstepSound);
-            nextFootstepTime = Time.time + footstepInterval;
-        }
-    }
-
-    void OnDisable()
-    {
-        if (footstepSource != null)
-        {
-            footstepSource.Stop();
-        }
     }
 
     void FixedUpdate()
     {
-        // Run and jump operate relative to the supporting platform.
         velocity = rb.linearVelocity - carriedVelocity;
 
         if (State == PlayerState.Normal)
@@ -169,17 +134,14 @@ public class PlayerMovement : MonoBehaviour
             CutJumpIfReleased();
             CorrectCorners();
         }
+
+        RestoreDroppedPlatforms();
         CheckSurroundings();
         TryJump();
         ApplyGravity();
+        fallSpeed = isGrounded ? 0f : Mathf.Max(0f, -velocity.y);
 
-        carriedVelocity = isGrounded && groundPlatform != null && groundPlatform.isActiveAndEnabled
-            ? groundPlatform.Velocity
-            : Vector2.zero;
-        if (isGrounded && verticalPlatform != null && verticalPlatform.isActiveAndEnabled)
-        {
-            carriedVelocity = verticalPlatform.Velocity;
-        }
+        carriedVelocity = isGrounded ? groundVelocity : Vector2.zero;
         rb.linearVelocity = velocity + carriedVelocity;
         ApplyLeftBoundary();
     }
@@ -193,14 +155,13 @@ public class PlayerMovement : MonoBehaviour
     void ApplyLeftBoundary()
     {
         if (float.IsNegativeInfinity(leftBoundary))
-        {
             return;
-        }
 
         float minX = leftBoundary + col.bounds.extents.x - transform.TransformVector(col.offset).x;
         Vector2 position = rb.position;
         position.x = Mathf.Max(position.x, minX);
         rb.position = position;
+
         Vector2 currentVelocity = rb.linearVelocity;
         currentVelocity.x = Mathf.Max(currentVelocity.x, (minX - position.x) / Time.fixedDeltaTime);
         rb.linearVelocity = currentVelocity;
@@ -211,34 +172,68 @@ public class PlayerMovement : MonoBehaviour
         bool wasGrounded = isGrounded;
         isGrounded = false;
         groundNormal = Vector2.up;
-        groundPlatform = null;
-        verticalPlatform = null;
+        groundVelocity = Vector2.zero;
 
         bool justJumped = Time.time - lastJumpTime < JumpGroundIgnoreTime;
-        RaycastHit2D ground = Cast(Vector2.down, wasGrounded ? SnapDistance : ContactDistance, 1f);
+        float groundDistance = wasGrounded ? SnapDistance : ContactDistance;
+        bool canLandOnOneWay = velocity.y <= 0f || (wasGrounded && State == PlayerState.Normal);
+        RaycastHit2D ground = Cast(Vector2.down, groundDistance, 1f, canLandOnOneWay);
+        if (ground && dropHeld && State == PlayerState.Normal && IsOneWay(ground.collider))
+        {
+            DropThrough(ground.collider);
+            ground = Cast(Vector2.down, groundDistance, 1f, canLandOnOneWay);
+        }
+
         if (ground && !justJumped && ground.normal.y >= Mathf.Cos(maxSlopeAngle * Mathf.Deg2Rad))
         {
             isGrounded = true;
             groundNormal = ground.normal;
-            groundPlatform = ground.collider.GetComponentInParent<MovingPlatform>();
-            verticalPlatform = ground.collider.GetComponentInParent<VerticalPlatform>();
+            groundVelocity = PlatformVelocity(ground.collider);
             lastGroundedTime = Time.time;
-            airJumpsLeft = airJumps;
 
             float gap = ground.distance - Skin;
             if (gap > Skin)
                 rb.position += Vector2.down * (gap - Skin * 0.5f);
+
+            if (!wasGrounded)
+                Landed?.Invoke(fallSpeed);
         }
 
         int wall = isGrounded ? 0 : WallSide(ContactDistance);
-        isWallSliding = wall != 0 && MoveInput == wall && velocity.y <= 0f;
-        if (isWallSliding)
-            airJumpsLeft = airJumps;
+        isWallSliding = wall != 0 && moveInput == wall && velocity.y <= 0f;
 
         if (State == PlayerState.Grappled)
-        {
             isGrounded = true;
+
+        if (isGrounded || isWallSliding)
             airJumpsLeft = airJumps;
+    }
+
+    void DropThrough(Collider2D platform)
+    {
+        Physics2D.IgnoreCollision(col, platform, true);
+        droppedPlatforms.Add(platform);
+        lastDropTime = Time.time;
+        lastGroundedTime = float.NegativeInfinity;
+    }
+
+    void RestoreDroppedPlatforms()
+    {
+        if (Time.time - lastDropTime < DropThroughTime)
+            return;
+
+        for (int i = droppedPlatforms.Count - 1; i >= 0; i--)
+        {
+            Collider2D platform = droppedPlatforms[i];
+            if (platform == null)
+            {
+                droppedPlatforms.RemoveAt(i);
+            }
+            else if (!col.Distance(platform).isOverlapped)
+            {
+                Physics2D.IgnoreCollision(col, platform, false);
+                droppedPlatforms.RemoveAt(i);
+            }
         }
     }
 
@@ -254,28 +249,28 @@ public class PlayerMovement : MonoBehaviour
         if (isGrounded)
         {
             Vector2 along = new Vector2(groundNormal.y, -groundNormal.x);
-            float speed = Mathf.MoveTowards(Vector2.Dot(velocity, along), MoveInput * maxSpeed, step);
+            float speed = Mathf.MoveTowards(Vector2.Dot(velocity, along), moveInput * maxSpeed, step);
             velocity = along * speed;
         }
         else
         {
-            velocity.x = Mathf.MoveTowards(velocity.x, MoveInput * maxSpeed, step);
+            velocity.x = Mathf.MoveTowards(velocity.x, moveInput * maxSpeed, step);
         }
     }
 
     void StepOverBumps()
     {
-        if (!isGrounded || MoveInput == 0f || maxStepHeight <= 0f)
+        if (!isGrounded || moveInput == 0f || maxStepHeight <= 0f)
             return;
 
         Bounds b = col.bounds;
-        Vector2 direction = new Vector2(MoveInput, 0f);
+        Vector2 direction = new Vector2(moveInput, 0f);
         float reach = Mathf.Abs(velocity.x) * Time.fixedDeltaTime + ContactDistance;
 
         Vector2 feetSize = new Vector2(b.size.x - 2f * Skin, maxStepHeight);
         Vector2 feetCenter = new Vector2(b.center.x, b.min.y + Skin + maxStepHeight * 0.5f);
         RaycastHit2D hit = CastFrom(feetCenter, feetSize, direction, reach);
-        if (!hit || Mathf.Abs(hit.normal.x) < 0.9f)
+        if (!hit || Mathf.Abs(hit.normal.x) < WallNormalThreshold)
             return;
 
         Vector2 bodySize = new Vector2(b.size.x - 2f * Skin, b.size.y - 2f * Skin);
@@ -288,82 +283,6 @@ public class PlayerMovement : MonoBehaviour
                 return;
             }
         }
-    }
-
-    void TryJump()
-    {
-        if (Time.time - lastJumpPressedTime > jumpBufferTime)
-            return;
-
-        bool canGroundJump = Time.time - lastGroundedTime <= coyoteTime;
-        int wall = WallSide(WallJumpDistance);
-
-        if (canGroundJump || State == PlayerState.Grappled)
-        {
-            Jump(jumpHeight);
-        }
-        else if (wall != 0)
-        {
-            WallJump(wall);
-        }
-        else if (airJumpsLeft > 0)
-        {
-            airJumpsLeft--;
-            Jump(airJumpHeight);
-        }
-    }
-
-    void Jump(float height)
-    {
-        velocity.y = JumpVelocity(height);
-        isGrounded = false;
-        isWallSliding = false;
-        canCutJump = true;
-        lastJumpTime = Time.time;
-        lastJumpPressedTime = float.NegativeInfinity;
-        lastGroundedTime = float.NegativeInfinity;
-    }
-
-    void WallJump(int wallSide)
-    {
-        velocity.x = -wallSide * wallJumpPushSpeed;
-        wallJumpTime = Time.time;
-        airJumpsLeft = airJumps;
-        Jump(jumpHeight);
-    }
-
-    void CutJumpIfReleased()
-    {
-        if (!canCutJump)
-            return;
-
-        if (!jumpHeld && velocity.y > 0f)
-        {
-            velocity.y *= jumpCutMultiplier;
-            canCutJump = false;
-        }
-        else if (velocity.y <= 0f)
-        {
-            canCutJump = false;
-        }
-    }
-
-    void ApplyGravity()
-    {
-        if (isGrounded)
-        {
-            velocity -= groundNormal * GroundStickSpeed;
-            return;
-        }
-
-        float gravity = Gravity;
-        if (velocity.y < 0f)
-            gravity *= fallGravityMultiplier;
-        if (jumpHeld && Mathf.Abs(velocity.y) < ApexSpeed)
-            gravity *= ApexGravityMultiplier;
-
-        float maxFall = isWallSliding ? wallSlideSpeed : maxFallSpeed;
-        velocity.y = Mathf.MoveTowards(velocity.y, -maxFall, gravity * Time.fixedDeltaTime);
     }
 
     void CorrectCorners()
@@ -394,6 +313,82 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    void CutJumpIfReleased()
+    {
+        if (!canCutJump)
+            return;
+
+        if (!jumpHeld && velocity.y > 0f)
+        {
+            velocity.y *= jumpCutMultiplier;
+            canCutJump = false;
+        }
+        else if (velocity.y <= 0f)
+        {
+            canCutJump = false;
+        }
+    }
+
+    void TryJump()
+    {
+        if (Time.time - lastJumpPressedTime > jumpBufferTime)
+            return;
+
+        if (Time.time - lastGroundedTime <= coyoteTime || State == PlayerState.Grappled)
+        {
+            Jump(jumpHeight);
+            return;
+        }
+
+        int wall = WallSide(WallJumpDistance);
+        if (wall != 0)
+        {
+            WallJump(wall);
+        }
+        else if (airJumpsLeft > 0)
+        {
+            airJumpsLeft--;
+            Jump(airJumpHeight);
+        }
+    }
+
+    void Jump(float height)
+    {
+        velocity.y = JumpVelocity(height);
+        isGrounded = false;
+        isWallSliding = false;
+        canCutJump = true;
+        lastJumpTime = Time.time;
+        lastJumpPressedTime = float.NegativeInfinity;
+        lastGroundedTime = float.NegativeInfinity;
+    }
+
+    void WallJump(int wallSide)
+    {
+        velocity.x = -wallSide * wallJumpPushSpeed;
+        wallJumpTime = Time.time;
+        airJumpsLeft = airJumps;
+        Jump(jumpHeight);
+    }
+
+    void ApplyGravity()
+    {
+        if (isGrounded)
+        {
+            velocity -= groundNormal * GroundStickSpeed;
+            return;
+        }
+
+        float gravity = Gravity;
+        if (velocity.y < 0f)
+            gravity *= fallGravityMultiplier;
+        if (jumpHeld && Mathf.Abs(velocity.y) < ApexSpeed)
+            gravity *= ApexGravityMultiplier;
+
+        float maxFall = isWallSliding ? wallSlideSpeed : maxFallSpeed;
+        velocity.y = Mathf.MoveTowards(velocity.y, -maxFall, gravity * Time.fixedDeltaTime);
+    }
+
     float JumpVelocity(float height)
     {
         float g = Gravity;
@@ -403,36 +398,58 @@ public class PlayerMovement : MonoBehaviour
 
     int WallSide(float distance)
     {
-        if (IsWall(Vector2.right, distance)) return 1;
-        if (IsWall(Vector2.left, distance)) return -1;
+        if (IsWall(Vector2.right, distance))
+            return 1;
+        if (IsWall(Vector2.left, distance))
+            return -1;
         return 0;
     }
 
     bool IsWall(Vector2 direction, float distance)
     {
-        RaycastHit2D hit = Cast(direction, distance, 0.6f);
-        return hit && Mathf.Abs(hit.normal.x) > 0.9f;
+        RaycastHit2D hit = Cast(direction, distance, WallCheckHeight);
+        return hit && Mathf.Abs(hit.normal.x) > WallNormalThreshold;
     }
 
-    RaycastHit2D Cast(Vector2 direction, float distance, float heightScale)
+    RaycastHit2D Cast(Vector2 direction, float distance, float heightScale, bool includeOneWay = false)
     {
         Bounds b = col.bounds;
         Vector2 size = new Vector2(b.size.x - 2f * Skin, b.size.y * heightScale - 2f * Skin);
-        return CastFrom(b.center, size, direction, distance + Skin);
+        return CastFrom(b.center, size, direction, distance + Skin, includeOneWay);
     }
 
-    RaycastHit2D CastFrom(Vector2 center, Vector2 size, Vector2 direction, float distance)
+    RaycastHit2D CastFrom(Vector2 center, Vector2 size, Vector2 direction, float distance, bool includeOneWay = false)
     {
-        // Moving platforms are solid ground even if their layer is Default.
-        ContactFilter2D filter = new ContactFilter2D { useTriggers = false };
-        Physics2D.BoxCast(center, size, 0f, direction, filter, castHits, distance);
+        Physics2D.BoxCast(center, size, 0f, direction, solidFilter, castHits, distance);
         RaycastHit2D nearest = default;
         foreach (RaycastHit2D hit in castHits)
         {
-            if (IsGroundCollider(hit.collider) && (!nearest || hit.distance < nearest.distance))
+            if (BlocksCast(hit, includeOneWay) && (!nearest || hit.distance < nearest.distance))
                 nearest = hit;
         }
         return nearest;
+    }
+
+    bool BlocksCast(RaycastHit2D hit, bool includeOneWay)
+    {
+        if (!IsGroundCollider(hit.collider))
+            return false;
+
+        if (!IsOneWay(hit.collider))
+            return true;
+
+        return includeOneWay && hit.distance > 0f && !droppedPlatforms.Contains(hit.collider);
+    }
+
+    bool Overlaps(Vector2 center, Vector2 size)
+    {
+        Physics2D.OverlapBox(center, size, 0f, solidFilter, overlapHits);
+        foreach (Collider2D hit in overlapHits)
+        {
+            if (IsGroundCollider(hit) && !IsOneWay(hit))
+                return true;
+        }
+        return false;
     }
 
     bool IsGroundCollider(Collider2D candidate)
@@ -441,20 +458,25 @@ public class PlayerMovement : MonoBehaviour
             return false;
 
         return (groundLayer.value & (1 << candidate.gameObject.layer)) != 0 ||
+            IsOneWay(candidate) ||
             candidate.GetComponentInParent<MovingPlatform>() != null ||
             candidate.GetComponentInParent<VerticalPlatform>() != null;
     }
 
-    bool Overlaps(Vector2 center, Vector2 size)
+    static bool IsOneWay(Collider2D candidate) =>
+        candidate.usedByEffector && candidate.TryGetComponent(out PlatformEffector2D effector) && effector.useOneWay;
+
+    static Vector2 PlatformVelocity(Collider2D platform)
     {
-        ContactFilter2D filter = new ContactFilter2D { useTriggers = false };
-        Physics2D.OverlapBox(center, size, 0f, filter, overlapHits);
-        foreach (Collider2D hit in overlapHits)
-        {
-            if (IsGroundCollider(hit))
-                return true;
-        }
-        return false;
+        VerticalPlatform vertical = platform.GetComponentInParent<VerticalPlatform>();
+        if (vertical != null && vertical.isActiveAndEnabled)
+            return vertical.Velocity;
+
+        MovingPlatform moving = platform.GetComponentInParent<MovingPlatform>();
+        if (moving != null && moving.isActiveAndEnabled)
+            return moving.Velocity;
+
+        return Vector2.zero;
     }
 
     void OnDrawGizmosSelected()

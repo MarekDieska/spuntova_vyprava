@@ -6,6 +6,7 @@ public class PauseMenu : MonoBehaviour
 {
     [SerializeField] GameObject mainPanel;
     [SerializeField] GameObject settingsPanel;
+    [SerializeField] GameObject audioPanel;
     [SerializeField] string menuScene = "MainMenu";
     [SerializeField] GameObject background;
 
@@ -13,8 +14,7 @@ public class PauseMenu : MonoBehaviour
 
     void Start()
     {
-        mainPanel.SetActive(false);
-        settingsPanel.SetActive(false);
+        ShowPanel(null);
         background.SetActive(false);
     }
 
@@ -30,6 +30,10 @@ public class PauseMenu : MonoBehaviour
             if (paused == false)
             {
                 Pause();
+            }
+            else if (audioPanel.activeSelf)
+            {
+                BackToSettings();
             }
             else if (settingsPanel.activeSelf)
             {
@@ -47,8 +51,7 @@ public class PauseMenu : MonoBehaviour
         paused = true;
         Time.timeScale = 0;
 
-        mainPanel.SetActive(true);
-        settingsPanel.SetActive(false);
+        ShowPanel(mainPanel);
         background.SetActive(true);
     }
 
@@ -57,31 +60,41 @@ public class PauseMenu : MonoBehaviour
         paused = false;
         Time.timeScale = 1;
 
-        mainPanel.SetActive(false);
+        ShowPanel(null);
         background.SetActive(false);
-        settingsPanel.SetActive(false);
     }
 
     public void OpenSettings()
     {
-        mainPanel.SetActive(false);
-        settingsPanel.SetActive(true);
+        ShowPanel(settingsPanel);
     }
 
     public void Back()
     {
-        settingsPanel.SetActive(false);
-        mainPanel.SetActive(true);
+        ShowPanel(mainPanel);
     }
 
-    public void SetVolume(float value)
+    public void OpenAudio()
     {
-        AudioListener.volume = value;
+        ShowPanel(audioPanel);
+    }
+
+    public void BackToSettings()
+    {
+        SoundSettings.Save();
+        ShowPanel(settingsPanel);
     }
 
     public void BackToMenu()
     {
         Resume();
         SceneManager.LoadScene(menuScene);
+    }
+
+    void ShowPanel(GameObject panel)
+    {
+        mainPanel.SetActive(panel == mainPanel);
+        settingsPanel.SetActive(panel == settingsPanel);
+        audioPanel.SetActive(panel == audioPanel);
     }
 }
