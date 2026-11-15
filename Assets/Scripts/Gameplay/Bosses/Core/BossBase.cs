@@ -1,0 +1,154 @@
+using UnityEngine;
+using System;
+
+[RequireComponent(typeof(Rigidbody2D))]
+public abstract class BossBase : MonoBehaviour, IDamageable, ILightReactable
+{
+    public event Action<int, int> OnHealthChanged; // <currentHp, maxHp>
+    public event Action<bool> OnAgitationChanged;
+    public event Action OnBossDefeated;
+
+    [Header("Base Boss Stats")]
+    [SerializeField] protected int maxHp = 3;
+    [SerializeField] protected float maxLightExposureTime = 2f;
+    [SerializeField] protected float agitationDrainDuration = 4f;
+
+    public Rigidbody2D Rb { get; private set; }
+    public BossStateMachine StateMachine { get; private set; }
+    public Transform Target => target;
+
+    public bool IsAgitated { get; private set; }
+    public bool IsDead { get; private set; }
+    public bool IsFacingRight { get; private set; } = true;
+    public bool IsEncounterActive { get; private set; }
+    public BossDormantState DormantState { get; protected set; }
+    public float AgitationProgress => Mathf.Clamp01(currentLightExposureTime / maxLightExposureTime);
+
+    protected int currentHp;
+    protected bool isVulnerable = false;
+    protected Transform target;
+
+    private float currentLightExposureTime = 0f;
+    private bool isLit = false;
+    private float lastLitTime = -999f;
+
+    protected virtual void Awake()
+    {
+        Rb = GetComponent<Rigidbody2D>();
+        StateMachine = new BossStateMachine();
+        currentHp = maxHp;
+    }
+
+    protected virtual void Start()
+    {
+        GameObject playerObj = GameObject.FindWithTag("Player");
+        if (playerObj != null) target = playerObj.transform;
+        OnHealthChanged?.Invoke(currentHp, maxHp);
+    }
+    protected virtual void Update()
+    {
+        if (IsDead) return;
+        bool isCurrentlyLit = (Time.time - lastLitTime) <= Time.fixedDeltaTime * 1.5f;
+        if (!isCurrentlyLit && currentLightExposureTime > 0f)
+        {
+            float drainSpeed = maxLightExposureTime / agitationDrainDuration;
+
+            currentLightExposureTime = Mathf.Max(0f, currentLightExposureTime - drainSpeed * Time.deltaTime);
+            if (currentLightExposureTime <= 0f)
+            {
+                UpdateAgitationState(false);
+            }
+        }
+        isLit = false;
+        StateMachine.Tick();
+    }
+
+    protected virtual void FixedUpdate()
+    {
+        if (IsDead) return;
+        StateMachine.FixedTick();
+    }
+    public virtual void OnLightEnter()
+    {
+        if (!IsEncounterActive) return;
+        lastLitTime = Time.time;
+        isLit = true;
+    }
+    public virtual void OnLightStay(float deltaTime)
+    {
+        if (!IsEncounterActive) return;
+        isLit = true;
+        currentLightExposureTime = Mathf.Min(maxLightExposureTime, currentLightExposureTime + deltaTime);
+        if (currentLightExposureTime >= maxLightExposureTime)
+        {
+            UpdateAgitationState(true);
+        }
+    }
+    public virtual void OnLightExit()
+    {
+        lastLitTime = Time.time;
+        isLit = false;
+    }
+    protected virtual void UpdateAgitationState(bool agitated)
+    {
+        if (IsAgitated == agitated) return;
+        IsAgitated = agitated;
+        OnAgitationChanged?.Invoke(IsAgitated);
+    }
+    public void SetVulnerable(bool state)
+    {
+        isVulnerable = state;
+    }
+    public virtual void TakeDamage(int amount)
+    {
+        bool canTakeDamage = IsAgitated || isVulnerable;
+        if (IsDead || !canTakeDamage) return;
+        currentHp = Mathf.Max(0, currentHp - amount);
+        OnHealthChanged?.Invoke(currentHp, maxHp);
+        if (currentHp == 0)
+        {
+            Die();
+        }
+        else
+        {
+            OnDamaged();
+        }
+    }
+    protected virtual void OnDamaged()
+    {
+        Debug.Log("taken damage, trigger VFX");
+    }
+
+    protected virtual void Die()
+    {
+        IsDead = true;
+        Rb.linearVelocity = Vector2.zero;
+        OnBossDefeated?.Invoke();
+    }
+    public void FaceTarget()
+    {
+        if (target == null) return;
+        float dirX = target.position.x - transform.position.x;
+        if (dirX > 0.05f && !IsFacingRight) Flip();
+        else if (dirX < -0.05f && IsFacingRight) Flip();
+    }
+
+    public void Flip()
+    {
+        IsFacingRight = !IsFacingRight;
+        Vector3 scale = transform.localScale;
+        scale.x *= -1f;
+        transform.localScale = scale;
+    }
+
+    public float DistanceToTarget()
+    {
+        if (target == null) return float.MaxValue;
+        return Vector2.Distance(transform.position, target.position);
+    }
+    [ContextMenu("Start Encounter")]
+    public virtual void StartEncounter()
+    {
+        IsEncounterActive = true;
+    }
+}
