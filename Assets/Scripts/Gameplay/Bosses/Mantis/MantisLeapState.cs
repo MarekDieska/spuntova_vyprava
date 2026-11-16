@@ -20,6 +20,7 @@ public class MantisLeapState : BossState
         mantis.FaceTarget();
         hasLaunched = false;
         airTime = 0f;
+        stationaryTimer = 0f;
         timer = mantis.LeapChargeTime;
 
         mantis.SetPrototypeColor(Color.orange);

@@ -68,6 +68,7 @@ public class MantisBoss : BossBase
 
         IdleState = new MantisIdleState(this, StateMachine);
         DormantState = new BossDormantState(this, StateMachine, IdleState);
+        HitState = new BossHitState(this, StateMachine, IdleState, hitStunDuration);
         SwipeState = new MantisSwipeState(this, StateMachine);
         LeapState = new MantisLeapState(this, StateMachine);
         LeafThrowState = new MantisLeafThrowState(this, StateMachine);
@@ -101,6 +102,15 @@ public class MantisBoss : BossBase
     public void RestoreDefaultColor()
     {
         SetPrototypeColor(IsAgitated ? Color.red : Color.darkGreen);
+    }
+    public override void OnHitStateEnter()
+    {
+        SetPrototypeColor(Color.black);
+    }
+
+    public override void OnHitStateExit()
+    {
+        RestoreDefaultColor();
     }
     protected override void Die()
     {

@@ -80,4 +80,15 @@ public class TemporalLightCharger : MonoBehaviour, ILightReactable
             Debug.Log($"Energy State: {(currentCharge / timeToCharge) * 100f:F1}%");
         }
     }
+    public void ResetCharger()
+    {
+        isFullyCharged = false;
+        isLit = false;
+        currentCharge = 0f;
+        activeTimer = 0f;
+
+        OnChargeProgressAction?.Invoke(0f);
+        OnChargeStateChangedAction?.Invoke(false);
+        OnChargeStateChangedLevelEvent?.Invoke(true);
+    }
 }
