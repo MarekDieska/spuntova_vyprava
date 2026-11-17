@@ -13,6 +13,8 @@ public abstract class BossBase : MonoBehaviour, IDamageable, ILightReactable
     [SerializeField] protected float maxLightExposureTime = 2f;
     [SerializeField] protected float agitationDrainDuration = 4f;
     [SerializeField] protected float hitStunDuration = 2f;
+    [SerializeField] protected AbilityType rewardAbilities = AbilityType.None;
+
     public Rigidbody2D Rb { get; private set; }
     public BossStateMachine StateMachine { get; private set; }
     public Transform Target => target;
@@ -128,6 +130,10 @@ public abstract class BossBase : MonoBehaviour, IDamageable, ILightReactable
         IsDead = true;
         StateMachine.CurrentState?.Exit();
         Rb.linearVelocity = Vector2.zero;
+        if (rewardAbilities != AbilityType.None && PlayerAbilityManager.Instance != null)
+        {
+            PlayerAbilityManager.Instance.Unlock(rewardAbilities);
+        }
         OnBossDefeated?.Invoke();
     }
     public void FaceTarget()

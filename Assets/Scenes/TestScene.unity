@@ -1069,6 +1069,7 @@ GameObject:
   - component: {fileID: 620240792}
   - component: {fileID: 620240794}
   - component: {fileID: 620240795}
+  - component: {fileID: 620240796}
   m_Layer: 8
   m_Name: Player
   m_TagString: Player
@@ -1192,6 +1193,9 @@ MonoBehaviour:
   maxFallSpeed: 18
   airJumps: 1
   airJumpHeight: 2.5
+  dashSpeed: 20
+  dashDuration: 0.16
+  dashCooldown: 0.45
   wallSlideSpeed: 3
   wallJumpPushSpeed: 11
   wallJumpControlTime: 0.2
@@ -1213,6 +1217,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerInput
   moveAction: {fileID: -1680190386980627800, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   jumpAction: {fileID: -2099379676528639254, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
+  dashAction: {fileID: -3468086966051215902, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   lightAction: {fileID: -4600379498413845215, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   aimPositionAction: {fileID: 5443390769958738457, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   lightToggleAction: {fileID: -6312406963403879206, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
@@ -1299,6 +1304,19 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerDamageVisuals
   iFrameDuration: 1.5
   blinkInterval: 0.1
+--- !u!114 &620240796
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 620240781}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7aad2771ad7015443855c5c929e54e2d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerAbilityManager
+  unlockedAbilities: 0
 --- !u!1 &641872357
 GameObject:
   m_ObjectHideFlags: 0
@@ -2032,6 +2050,7 @@ MonoBehaviour:
   maxLightExposureTime: 2
   agitationDrainDuration: 10
   hitStunDuration: 2
+  rewardAbilities: 3
   leapAttackChance: 0.65
   swipeAttackChance: 0.65
   decisionCooldown: 0.5

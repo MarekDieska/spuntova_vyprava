@@ -3755,6 +3755,9 @@ MonoBehaviour:
   maxFallSpeed: 18
   airJumps: 1
   airJumpHeight: 2.5
+  dashSpeed: 20
+  dashDuration: 0.16
+  dashCooldown: 0.45
   wallSlideSpeed: 2.5
   wallJumpPushSpeed: 11
   wallJumpControlTime: 0.2
@@ -3776,6 +3779,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerInput
   moveAction: {fileID: -1680190386980627800, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   jumpAction: {fileID: -2099379676528639254, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
+  dashAction: {fileID: -3468086966051215902, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   lightAction: {fileID: -4600379498413845215, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   aimPositionAction: {fileID: 5443390769958738457, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   lightToggleAction: {fileID: -6312406963403879206, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
