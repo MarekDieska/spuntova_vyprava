@@ -14,6 +14,7 @@ public abstract class BossBase : MonoBehaviour, IDamageable, ILightReactable
     [SerializeField] protected float agitationDrainDuration = 4f;
     [SerializeField] protected float hitStunDuration = 2f;
     [SerializeField] protected AbilityType rewardAbilities = AbilityType.None;
+    [SerializeField] private Collider2D bossHitbox;
 
     public Rigidbody2D Rb { get; private set; }
     public BossStateMachine StateMachine { get; private set; }
@@ -34,12 +35,14 @@ public abstract class BossBase : MonoBehaviour, IDamageable, ILightReactable
 
     private float currentLightExposureTime = 0f;
     private float lastLitTime = -999f; private bool isHitInvulnerable = false;
+    private Vector3 initialSpawnPos;
 
     protected virtual void Awake()
     {
         Rb = GetComponent<Rigidbody2D>();
         StateMachine = new BossStateMachine();
         currentHp = maxHp;
+        initialSpawnPos = transform.position;
     }
 
     protected virtual void Start()
@@ -134,6 +137,7 @@ public abstract class BossBase : MonoBehaviour, IDamageable, ILightReactable
         {
             PlayerAbilityManager.Instance.Unlock(rewardAbilities);
         }
+        bossHitbox.enabled = false;
         OnBossDefeated?.Invoke();
     }
     public void FaceTarget()
@@ -161,5 +165,28 @@ public abstract class BossBase : MonoBehaviour, IDamageable, ILightReactable
     public virtual void StartEncounter()
     {
         IsEncounterActive = true;
+    }
+    public virtual void ResetBoss()
+    {
+        if (IsDead) return;
+
+        transform.position = initialSpawnPos;
+        Rb.linearVelocity = Vector2.zero;
+
+        currentHp = maxHp;
+        OnHealthChanged?.Invoke(currentHp, maxHp);
+
+        currentLightExposureTime = 0f;
+        isVulnerable = false;
+        isHitInvulnerable = false;
+        IsEncounterActive = false;
+        UpdateAgitationState(false);
+
+        if (!IsFacingRight) Flip();
+
+        if (DormantState != null)
+        {
+            StateMachine.ChangeState(DormantState);
+        }
     }
 }

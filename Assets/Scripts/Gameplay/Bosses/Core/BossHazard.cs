@@ -6,17 +6,19 @@ using UnityEngine;
 public class BossHazard : MonoBehaviour
 {
     public event Action OnBossHit;
+    public event Action OnHazardReformed;
 
     [Header("Hazard Settings")]
     [SerializeField] private int damageAmount = 1;
+    [SerializeField] private bool autoReform = false;
     [SerializeField] private float reformDelay = 5f;
     [SerializeField] private TemporalLightCharger lightCharger;
 
     public float ReformDelay => reformDelay;
     public bool IsActive { get; private set; }
+    public bool IsSpent { get; private set; }
 
     private Collider2D hazardCollider;
-    private bool isReforming = false;
 
     private void Awake()
     {
@@ -25,6 +27,7 @@ public class BossHazard : MonoBehaviour
 
         if (lightCharger == null) lightCharger = GetComponent<TemporalLightCharger>();
         IsActive = false;
+        IsSpent = false;
     }
 
     private void OnEnable()
@@ -41,7 +44,7 @@ public class BossHazard : MonoBehaviour
 
     public void SetActive(bool active)
     {
-        if (isReforming) return;
+        if (IsSpent) return;
         IsActive = active;
     }
 
@@ -57,7 +60,7 @@ public class BossHazard : MonoBehaviour
 
     private void TryDamageBoss(Collider2D other)
     {
-        if (!IsActive || isReforming) return;
+        if (!IsActive || IsSpent) return;
 
         BossBase boss = other.GetComponentInParent<BossBase>();
         if (boss == null || boss.IsDead) return;
@@ -68,21 +71,30 @@ public class BossHazard : MonoBehaviour
         if (boss.CurrentHp < hpBefore)
         {
             IsActive = false;
+            IsSpent = true;
+            lightCharger.ResetCharger();
+            hazardCollider.enabled = false;
             OnBossHit?.Invoke();
-            StartCoroutine(ReformRoutine());
+            if (autoReform)
+            {
+                StartCoroutine(AutoReformRoutine());
+            }
         }
     }
-
-    private IEnumerator ReformRoutine()
+    private IEnumerator AutoReformRoutine()
     {
-        isReforming = true;
+        yield return new WaitForSeconds(reformDelay);
+        Reform();
+    }
+    public void Reform()
+    {
+        StopAllCoroutines();
+        IsSpent = false;
+        IsActive = false;
 
         lightCharger.ResetCharger();
-        hazardCollider.enabled = false;
-
-        yield return new WaitForSeconds(reformDelay);
-
         hazardCollider.enabled = true;
-        isReforming = false;
+
+        OnHazardReformed?.Invoke();
     }
 }

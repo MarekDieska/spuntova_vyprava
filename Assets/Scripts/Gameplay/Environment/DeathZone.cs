@@ -6,6 +6,7 @@ public class DeathZone : MonoBehaviour
 
     [SerializeField] private int damageAmount = 1;
     [SerializeField] private AudioClip damageSound;
+    [SerializeField] private bool shouldRespawn = true;
 
     private AudioSource damageAudio;
 
@@ -32,7 +33,7 @@ public class DeathZone : MonoBehaviour
             }
             damageable.TakeDamage(damageAmount);
         }
-        if (other.TryGetComponent(out PlayerHealth playerHealth))
+        if (other.TryGetComponent(out PlayerHealth playerHealth) && shouldRespawn)
         {
             playerHealth.Respawn();
         }

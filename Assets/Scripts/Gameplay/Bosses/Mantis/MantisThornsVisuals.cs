@@ -6,7 +6,7 @@ public class MantisThornVisuals : MonoBehaviour
 {
     [Header("Dissolve & Reform Timing")]
     [SerializeField] private float dissolveSpeed = 1.25f;
-    [SerializeField] private float reformDuration = 1.5f;
+    [SerializeField] private float reformSpeed = 1.25f;
 
     [Header("Charge & Active Visuals")]
     [SerializeField] private float chargedDissolveShimmer = 0.2f;
@@ -23,7 +23,7 @@ public class MantisThornVisuals : MonoBehaviour
     private TemporalLightCharger charger;
     private MaterialPropertyBlock propBlock;
 
-    private Coroutine dissolveRoutine;
+    private Coroutine transitionRoutine;
     private bool isDissolvedState = false;
     private float currentDissolve = 0f;
     private Color currentEdgeColor;
@@ -42,12 +42,14 @@ public class MantisThornVisuals : MonoBehaviour
     private void OnEnable()
     {
         hazard.OnBossHit += HandleBossHit;
+        hazard.OnHazardReformed += HandleHazardReformed;
         charger.OnChargeProgressAction += HandleChargeProgress;
     }
 
     private void OnDisable()
     {
         hazard.OnBossHit -= HandleBossHit;
+        hazard.OnHazardReformed -= HandleHazardReformed;
         charger.OnChargeProgressAction -= HandleChargeProgress;
     }
 
@@ -60,37 +62,32 @@ public class MantisThornVisuals : MonoBehaviour
         ApplyProperties(currentDissolve, currentEdgeColor);
     }
 
-    [ContextMenu("Boss hit")]//DEBUG
     public void HandleBossHit()
     {
-        if (dissolveRoutine != null) StopCoroutine(dissolveRoutine);
-        dissolveRoutine = StartCoroutine(DissolveAndReformRoutine());
+        if (transitionRoutine != null) StopCoroutine(transitionRoutine);
+        transitionRoutine = StartCoroutine(DissolveRoutine());
     }
-
-    private IEnumerator DissolveAndReformRoutine()
+    public void HandleHazardReformed()
+    {
+        if (transitionRoutine != null) StopCoroutine(transitionRoutine);
+        transitionRoutine = StartCoroutine(ReformRoutine());
+    }
+    private IEnumerator DissolveRoutine()
     {
         isDissolvedState = true;
-        float totalReformTime = hazard.ReformDelay;
-        float elapsed = 0f;
-        currentDissolve = 0f;
 
         while (currentDissolve < 1f)
         {
-            float dt = Time.deltaTime;
-            elapsed += dt;
-            currentDissolve = Mathf.MoveTowards(currentDissolve, 1f, dissolveSpeed * dt);
+            currentDissolve = Mathf.MoveTowards(currentDissolve, 1f, dissolveSpeed * Time.deltaTime);
             ApplyProperties(currentDissolve, activeEdgeColor);
             yield return null;
         }
 
-        float waitDuration = Mathf.Max(0f, totalReformTime - elapsed - reformDuration);
-        if (waitDuration > 0f)
-        {
-            yield return new WaitForSeconds(waitDuration);
-        }
-
-        float actualReformTime = Mathf.Max(0.01f, Mathf.Min(reformDuration, totalReformTime - elapsed));
-        float reformSpeed = 1f / actualReformTime;
+        transitionRoutine = null;
+    }
+    private IEnumerator ReformRoutine()
+    {
+        isDissolvedState = true;
 
         while (currentDissolve > 0f)
         {
@@ -103,11 +100,14 @@ public class MantisThornVisuals : MonoBehaviour
         currentEdgeColor = inactiveEdgeColor;
         ApplyProperties(0f, currentEdgeColor);
         isDissolvedState = false;
-        dissolveRoutine = null;
+        transitionRoutine = null;
     }
 
     private void ApplyProperties(float amount, Color color)
     {
+        if (spriteRenderer == null) spriteRenderer = GetComponent<SpriteRenderer>();
+        if (propBlock == null) propBlock = new MaterialPropertyBlock();
+
         spriteRenderer.GetPropertyBlock(propBlock);
         propBlock.SetFloat(DissolveAmountID, amount);
         propBlock.SetColor(DissolveColorID, color);
