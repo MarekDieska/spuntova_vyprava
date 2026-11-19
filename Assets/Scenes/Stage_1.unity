@@ -1994,6 +1994,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: '::'
   damageAmount: 1
   damageSound: {fileID: 0}
+  shouldRespawn: 1
   alignForegroundThorns: 1
 --- !u!61 &239501764
 BoxCollider2D:
@@ -3480,6 +3481,11 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b54cbb8171b1b6945bb8b19eb5263f4f, type: 3}
+--- !u!1 &526092341 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 4729375600981333781, guid: 398eded6a75f49f4c9878e2214d7e415, type: 3}
+  m_PrefabInstance: {fileID: 5828385710404202227}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1001 &546122303
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -4234,7 +4240,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 2913708494436086525, guid: 398eded6a75f49f4c9878e2214d7e415, type: 3}
   m_PrefabInstance: {fileID: 5828385710404202227}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 526092341}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: ca08c44fb2dd14ef0a3ff00fd60d0fb5, type: 3}
@@ -4245,12 +4251,36 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 3760443089484540961, guid: 398eded6a75f49f4c9878e2214d7e415, type: 3}
   m_PrefabInstance: {fileID: 5828385710404202227}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
+  m_GameObject: {fileID: 526092341}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 7e0a43c03c8922e4bac21eb3aa13d1c0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: '::'
+--- !u!114 &620240798 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3736359161678637036, guid: 398eded6a75f49f4c9878e2214d7e415, type: 3}
+  m_PrefabInstance: {fileID: 5828385710404202227}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 526092341}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1c6eac1cd305d4e09aa502318b2e54fa, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerInput
+--- !u!114 &620240801
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 526092341}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7aad2771ad7015443855c5c929e54e2d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerAbilityManager
+  unlockedAbilities: 0
 --- !u!1 &626371037
 GameObject:
   m_ObjectHideFlags: 0
@@ -4734,6 +4764,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: '::'
   damageAmount: 1
   damageSound: {fileID: 0}
+  shouldRespawn: 1
   alignForegroundThorns: 1
 --- !u!61 &660326995
 BoxCollider2D:
@@ -6278,6 +6309,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: '::'
   damageAmount: 1
   damageSound: {fileID: 8300000, guid: 1b87164eb0c50d44197c7e5f575d5aa9, type: 3}
+  shouldRespawn: 1
   alignForegroundThorns: 1
 --- !u!61 &864203712
 BoxCollider2D:
@@ -6403,6 +6435,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: '::'
   damageAmount: 1
   damageSound: {fileID: 0}
+  shouldRespawn: 1
   alignForegroundThorns: 1
 --- !u!61 &877286085
 BoxCollider2D:
@@ -6563,6 +6596,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: '::'
   damageAmount: 1
   damageSound: {fileID: 0}
+  shouldRespawn: 1
   alignForegroundThorns: 1
 --- !u!61 &891766068
 BoxCollider2D:
@@ -7090,6 +7124,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: '::'
   damageAmount: 1
   damageSound: {fileID: 0}
+  shouldRespawn: 1
   alignForegroundThorns: 1
 --- !u!61 &987542480
 BoxCollider2D:
@@ -7276,6 +7311,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: '::'
   damageAmount: 1
   damageSound: {fileID: 0}
+  shouldRespawn: 1
   alignForegroundThorns: 1
 --- !u!61 &996432462
 BoxCollider2D:
@@ -12820,6 +12856,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: '::'
   damageAmount: 1
   damageSound: {fileID: 0}
+  shouldRespawn: 1
   alignForegroundThorns: 1
 --- !u!61 &1270361386
 BoxCollider2D:
@@ -16603,6 +16640,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: '::'
   damageAmount: 1
   damageSound: {fileID: 0}
+  shouldRespawn: 1
   alignForegroundThorns: 1
 --- !u!61 &1593814584
 BoxCollider2D:
@@ -116706,6 +116744,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: '::'
   damageAmount: 1
   damageSound: {fileID: 8300000, guid: 1b87164eb0c50d44197c7e5f575d5aa9, type: 3}
+  shouldRespawn: 1
   alignForegroundThorns: 1
 --- !u!61 &1867999998
 BoxCollider2D:
@@ -119643,6 +119682,10 @@ PrefabInstance:
     serializedVersion: 3
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 790989415936246102, guid: fe500c8a7219843448ec249547a45faf, type: 3}
+      propertyPath: playerHealth
+      value: 
+      objectReference: {fileID: 620240792}
     - target: {fileID: 2170264435240711096, guid: fe500c8a7219843448ec249547a45faf, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
@@ -119679,6 +119722,14 @@ PrefabInstance:
       propertyPath: m_AnchorMax.y
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4448986779056744545, guid: fe500c8a7219843448ec249547a45faf, type: 3}
+      propertyPath: playerInput
+      value: 
+      objectReference: {fileID: 620240798}
+    - target: {fileID: 4448986779056744545, guid: fe500c8a7219843448ec249547a45faf, type: 3}
+      propertyPath: playerMovement
+      value: 
+      objectReference: {fileID: 620240787}
     - target: {fileID: 5249454667835039681, guid: fe500c8a7219843448ec249547a45faf, type: 3}
       propertyPath: m_AnchorMax.x
       value: 0
@@ -120552,6 +120603,14 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 3736359161678637036, guid: 398eded6a75f49f4c9878e2214d7e415, type: 3}
+      propertyPath: dashAction
+      value: 
+      objectReference: {fileID: -3468086966051215902, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
+    - target: {fileID: 3760443089484540961, guid: 398eded6a75f49f4c9878e2214d7e415, type: 3}
+      propertyPath: maxHp
+      value: 3
+      objectReference: {fileID: 0}
     - target: {fileID: 4729375600981333781, guid: 398eded6a75f49f4c9878e2214d7e415, type: 3}
       propertyPath: m_Name
       value: Player
@@ -120559,7 +120618,10 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 4729375600981333781, guid: 398eded6a75f49f4c9878e2214d7e415, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 620240801}
   m_SourcePrefab: {fileID: 100100000, guid: 398eded6a75f49f4c9878e2214d7e415, type: 3}
 --- !u!1001 &6518835236975308746
 PrefabInstance:
