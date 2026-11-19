@@ -26,6 +26,11 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] int airJumps = 1;
     [SerializeField] float airJumpHeight = 2.5f;
 
+    [Header("Dash")]
+    [SerializeField] float dashSpeed = 20f;
+    [SerializeField] float dashDuration = 0.16f;
+    [SerializeField] float dashCooldown = 0.45f;
+
     [Header("Wall")]
     [SerializeField] float wallSlideSpeed = 3f;
     [SerializeField] float wallJumpPushSpeed = 11f;
@@ -67,12 +72,15 @@ public class PlayerMovement : MonoBehaviour
     Vector2 groundVelocity;
     Vector2 groundNormal = Vector2.up;
     float moveInput;
+    float facingDirection;
     float fallSpeed;
     bool jumpHeld;
     bool dropHeld;
     bool isGrounded;
     bool isWallSliding;
     bool canCutJump;
+    bool dashPressed;
+    bool canAirDash;
     int airJumpsLeft;
     float leftBoundary = float.NegativeInfinity;
     float lastJumpPressedTime = float.NegativeInfinity;
@@ -80,6 +88,9 @@ public class PlayerMovement : MonoBehaviour
     float lastJumpTime = float.NegativeInfinity;
     float wallJumpTime = float.NegativeInfinity;
     float lastDropTime = float.NegativeInfinity;
+    float dashEndTime = float.NegativeInfinity;
+    float lastDashTime = float.NegativeInfinity;
+    float dashDirection;
 
     public event System.Action<float> Landed;
 
@@ -87,6 +98,7 @@ public class PlayerMovement : MonoBehaviour
     public float MoveInput => moveInput;
     public bool IsGrounded => isGrounded;
     public bool IsWallSliding => isWallSliding;
+    public bool IsDashing => Time.time < dashEndTime;
     public Vector2 Velocity => velocity;
 
     public bool IsWalking =>
@@ -94,6 +106,8 @@ public class PlayerMovement : MonoBehaviour
         (rb.constraints & RigidbodyConstraints2D.FreezePositionX) == 0 &&
         Mathf.Abs(rb.linearVelocity.x - carriedVelocity.x) > WalkSpeedThreshold;
 
+    int MaxAirJumps => PlayerAbilityManager.Instance.IsUnlocked(AbilityType.DoubleJump) ? airJumps : 0;
+    bool CanUseDash => PlayerAbilityManager.Instance.IsUnlocked(AbilityType.Dash);
     float Gravity => 2f * jumpHeight / (timeToApex * timeToApex);
 
     void Reset() => groundLayer = LayerMask.GetMask("Ground");
@@ -110,7 +124,7 @@ public class PlayerMovement : MonoBehaviour
         rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
         col.sharedMaterial = new PhysicsMaterial2D { friction = 0f };
 
-        airJumpsLeft = airJumps;
+        airJumpsLeft = MaxAirJumps;
     }
 
     void Update()
@@ -121,6 +135,8 @@ public class PlayerMovement : MonoBehaviour
 
         if (input.JumpPressedThisFrame)
             lastJumpPressedTime = Time.time;
+        if (input.DashPressedThisFrame)
+            dashPressed = true;
     }
 
     void FixedUpdate()
@@ -129,23 +145,58 @@ public class PlayerMovement : MonoBehaviour
 
         if (State == PlayerState.Normal)
         {
-            Run();
-            StepOverBumps();
-            CutJumpIfReleased();
-            CorrectCorners();
+            TryDash();
+
+            if (IsDashing)
+            {
+                velocity = new Vector2(dashDirection * dashSpeed, 0f);
+            }
+            else
+            {
+                Run();
+                StepOverBumps();
+                CutJumpIfReleased();
+                CorrectCorners();
+            }
         }
 
         RestoreDroppedPlatforms();
         CheckSurroundings();
         TryJump();
-        ApplyGravity();
+        if (!IsDashing)
+            ApplyGravity();
         fallSpeed = isGrounded ? 0f : Mathf.Max(0f, -velocity.y);
 
         carriedVelocity = isGrounded ? groundVelocity : Vector2.zero;
         rb.linearVelocity = velocity + carriedVelocity;
         ApplyLeftBoundary();
     }
+    void TryDash()
+    {
+        if (!dashPressed) return;
+        dashPressed = false;
 
+        bool unlocked = PlayerAbilityManager.Instance != null && PlayerAbilityManager.Instance.IsUnlocked(AbilityType.Dash);
+        if (!unlocked || IsDashing || Time.time - lastDashTime < dashCooldown)
+            return;
+
+        bool grounded = isGrounded || (Time.time - lastGroundedTime <= coyoteTime);
+        int wall = isGrounded ? 0 : WallSide(ContactDistance);
+        bool onWall = wall != 0 && isWallSliding;
+
+        if (!grounded && !onWall && !canAirDash)
+            return;
+
+        if (!grounded && !onWall)
+            canAirDash = false;
+
+        dashDirection = onWall ? -wall : (moveInput != 0f ? moveInput : facingDirection);
+        facingDirection = dashDirection;
+        isWallSliding = false;
+        lastDashTime = Time.time;
+        dashEndTime = Time.time + dashDuration;
+        canCutJump = false;
+    }
     public void SetLeftBoundary(float x)
     {
         leftBoundary = x;
@@ -213,13 +264,16 @@ public class PlayerMovement : MonoBehaviour
         }
 
         int wall = isGrounded ? 0 : WallSide(ContactDistance);
-        isWallSliding = wall != 0 && moveInput == wall && velocity.y <= 0f;
+        isWallSliding = !IsDashing && wall != 0 && moveInput == wall && velocity.y <= 0f;
 
         if (State == PlayerState.Grappled)
             isGrounded = true;
 
         if (isGrounded || isWallSliding)
-            airJumpsLeft = airJumps;
+        {
+            airJumpsLeft = MaxAirJumps;
+            canAirDash = true;
+        }
     }
 
     void DropThrough(Collider2D platform)
@@ -349,6 +403,7 @@ public class PlayerMovement : MonoBehaviour
 
         if (Time.time - lastGroundedTime <= coyoteTime || State == PlayerState.Grappled)
         {
+            dashEndTime = float.NegativeInfinity;
             Jump(jumpHeight);
             return;
         }
@@ -356,10 +411,12 @@ public class PlayerMovement : MonoBehaviour
         int wall = WallSide(WallJumpDistance);
         if (wall != 0)
         {
+            dashEndTime = float.NegativeInfinity;
             WallJump(wall);
         }
         else if (airJumpsLeft > 0)
         {
+            dashEndTime = float.NegativeInfinity;
             airJumpsLeft--;
             Jump(airJumpHeight);
         }
@@ -380,7 +437,8 @@ public class PlayerMovement : MonoBehaviour
     {
         velocity.x = -wallSide * wallJumpPushSpeed;
         wallJumpTime = Time.time;
-        airJumpsLeft = airJumps;
+        airJumpsLeft = MaxAirJumps;
+        canAirDash = true;
         Jump(jumpHeight);
     }
 

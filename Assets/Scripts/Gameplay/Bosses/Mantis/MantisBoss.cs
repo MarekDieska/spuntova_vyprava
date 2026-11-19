@@ -20,6 +20,8 @@ public class MantisBoss : BossBase
     [SerializeField] private float leapHorizontalForce = 12f;
     [SerializeField] private float leapVerticalForce = 14f;
     [SerializeField] private float agitatedLeapMultiplier = 1.45f;
+    [SerializeField] private float dashLeapDistance = 8.5f;
+    [SerializeField] private float dashLeapSpeed = 19f;
     [Header("Leaf Throw State")]
     [SerializeField] private float leafChargeTime = 0.5f;
     [SerializeField] private GameObject leafProjectilePrefab;
@@ -52,6 +54,8 @@ public class MantisBoss : BossBase
     public float LeapChargeTime => leapChargeTime / SpeedMultiplier;
     public float LeapHorizontalForce => leapHorizontalForce * (IsAgitated ? agitatedLeapMultiplier : 1f);
     public float LeapVerticalForce => leapVerticalForce;
+    public float DashLeapDistance => dashLeapDistance;
+    public float DashLeapSpeed => dashLeapSpeed * (IsAgitated ? agitatedLeapMultiplier : 1f);
 
     public float LeafChargeTime => leafChargeTime / SpeedMultiplier;
     public GameObject LeafProjectilePrefab => leafProjectilePrefab;
@@ -68,6 +72,7 @@ public class MantisBoss : BossBase
 
         IdleState = new MantisIdleState(this, StateMachine);
         DormantState = new BossDormantState(this, StateMachine, IdleState);
+        HitState = new BossHitState(this, StateMachine, IdleState, hitStunDuration);
         SwipeState = new MantisSwipeState(this, StateMachine);
         LeapState = new MantisLeapState(this, StateMachine);
         LeafThrowState = new MantisLeafThrowState(this, StateMachine);
@@ -101,6 +106,15 @@ public class MantisBoss : BossBase
     public void RestoreDefaultColor()
     {
         SetPrototypeColor(IsAgitated ? Color.red : Color.darkGreen);
+    }
+    public override void OnHitStateEnter()
+    {
+        SetPrototypeColor(Color.black);
+    }
+
+    public override void OnHitStateExit()
+    {
+        RestoreDefaultColor();
     }
     protected override void Die()
     {

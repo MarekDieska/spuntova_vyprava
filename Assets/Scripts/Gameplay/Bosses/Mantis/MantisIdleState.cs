@@ -30,7 +30,7 @@ public class MantisIdleState : BossState
     private void ChooseNextAttack()
     {
         float distance = mantis.DistanceToTarget();
-        float heightDifference = mantis.Target.position.y - mantis.transform.position.y;
+        float heightDifference = Mathf.Abs(mantis.Target.position.y - mantis.transform.position.y);
 
         if (heightDifference > mantis.MaxSwipeHeightDifference)
         {

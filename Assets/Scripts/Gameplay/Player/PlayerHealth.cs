@@ -11,6 +11,9 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     private bool isInvincible = false;
     private Vector2 currentRespawnPosition;
     private CameraController2D cameraController;
+    private PlayerInput playerInput;
+    private PlayerMovement playerMovement;
+    private Rigidbody2D rb;
 
     private void Awake()
     {
@@ -19,6 +22,9 @@ public class PlayerHealth : MonoBehaviour, IDamageable
         {
             cameraController = Camera.main.GetComponent<CameraController2D>();
         }
+        playerInput = GetComponent<PlayerInput>();
+        playerMovement = GetComponent<PlayerMovement>();
+        rb = GetComponent<Rigidbody2D>();
     }
     private void Start()
     {
@@ -35,7 +41,21 @@ public class PlayerHealth : MonoBehaviour, IDamageable
         if (currentHp == 0)
         {
             OnDeathAction?.Invoke();
+            HandleDeath();
         }
+    }
+    private void HandleDeath()
+    {
+        SetPlayerControlEnabled(false);
+        OnDeathAction?.Invoke();
+    }
+    private void SetPlayerControlEnabled(bool enabled)
+    {
+        playerInput.enabled = enabled;
+        playerMovement.enabled = enabled;
+
+        rb.linearVelocity = Vector2.zero;
+        rb.simulated = enabled;
     }
     public void SetInvincible(bool state)
     {
@@ -48,6 +68,20 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     public void Respawn()
     {
         transform.position = currentRespawnPosition;
+        if (cameraController != null)
+        {
+            cameraController.RespawnTransition();
+        }
+    }
+    public void RespawnAfterDeath()
+    {
+        currentHp = maxHp;
+        isInvincible = false;
+        OnHealthChangedAction?.Invoke(currentHp, maxHp, 0);
+
+        transform.position = currentRespawnPosition;
+        SetPlayerControlEnabled(true);
+
         if (cameraController != null)
         {
             cameraController.RespawnTransition();

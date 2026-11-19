@@ -12,6 +12,9 @@ public abstract class BossBase : MonoBehaviour, IDamageable, ILightReactable
     [SerializeField] protected int maxHp = 3;
     [SerializeField] protected float maxLightExposureTime = 2f;
     [SerializeField] protected float agitationDrainDuration = 4f;
+    [SerializeField] protected float hitStunDuration = 2f;
+    [SerializeField] protected AbilityType rewardAbilities = AbilityType.None;
+    [SerializeField] private Collider2D bossHitbox;
 
     public Rigidbody2D Rb { get; private set; }
     public BossStateMachine StateMachine { get; private set; }
@@ -22,6 +25,8 @@ public abstract class BossBase : MonoBehaviour, IDamageable, ILightReactable
     public bool IsFacingRight { get; private set; } = true;
     public bool IsEncounterActive { get; private set; }
     public BossDormantState DormantState { get; protected set; }
+    public BossHitState HitState { get; protected set; }
+    public int CurrentHp => currentHp;
     public float AgitationProgress => Mathf.Clamp01(currentLightExposureTime / maxLightExposureTime);
 
     protected int currentHp;
@@ -29,14 +34,15 @@ public abstract class BossBase : MonoBehaviour, IDamageable, ILightReactable
     protected Transform target;
 
     private float currentLightExposureTime = 0f;
-    private bool isLit = false;
-    private float lastLitTime = -999f;
+    private float lastLitTime = -999f; private bool isHitInvulnerable = false;
+    private Vector3 initialSpawnPos;
 
     protected virtual void Awake()
     {
         Rb = GetComponent<Rigidbody2D>();
         StateMachine = new BossStateMachine();
         currentHp = maxHp;
+        initialSpawnPos = transform.position;
     }
 
     protected virtual void Start()
@@ -59,7 +65,6 @@ public abstract class BossBase : MonoBehaviour, IDamageable, ILightReactable
                 UpdateAgitationState(false);
             }
         }
-        isLit = false;
         StateMachine.Tick();
     }
 
@@ -72,23 +77,18 @@ public abstract class BossBase : MonoBehaviour, IDamageable, ILightReactable
     {
         if (!IsEncounterActive) return;
         lastLitTime = Time.time;
-        isLit = true;
     }
     public virtual void OnLightStay(float deltaTime)
     {
         if (!IsEncounterActive) return;
-        isLit = true;
+        lastLitTime = Time.time;
         currentLightExposureTime = Mathf.Min(maxLightExposureTime, currentLightExposureTime + deltaTime);
         if (currentLightExposureTime >= maxLightExposureTime)
         {
             UpdateAgitationState(true);
         }
     }
-    public virtual void OnLightExit()
-    {
-        lastLitTime = Time.time;
-        isLit = false;
-    }
+    public virtual void OnLightExit() { }
     protected virtual void UpdateAgitationState(bool agitated)
     {
         if (IsAgitated == agitated) return;
@@ -99,10 +99,14 @@ public abstract class BossBase : MonoBehaviour, IDamageable, ILightReactable
     {
         isVulnerable = state;
     }
+    public void SetHitInvulnerable(bool state)
+    {
+        isHitInvulnerable = state;
+    }
     public virtual void TakeDamage(int amount)
     {
         bool canTakeDamage = IsAgitated || isVulnerable;
-        if (IsDead || !canTakeDamage) return;
+        if (IsDead || isHitInvulnerable || !canTakeDamage) return;
         currentHp = Mathf.Max(0, currentHp - amount);
         OnHealthChanged?.Invoke(currentHp, maxHp);
         if (currentHp == 0)
@@ -117,12 +121,23 @@ public abstract class BossBase : MonoBehaviour, IDamageable, ILightReactable
     protected virtual void OnDamaged()
     {
         Debug.Log("taken damage, trigger VFX");
+        if (HitState != null)
+        {
+            StateMachine.ChangeState(HitState);
+        }
     }
-
+    public virtual void OnHitStateEnter() { }
+    public virtual void OnHitStateExit() { }
     protected virtual void Die()
     {
         IsDead = true;
+        StateMachine.CurrentState?.Exit();
         Rb.linearVelocity = Vector2.zero;
+        if (rewardAbilities != AbilityType.None && PlayerAbilityManager.Instance != null)
+        {
+            PlayerAbilityManager.Instance.Unlock(rewardAbilities);
+        }
+        bossHitbox.enabled = false;
         OnBossDefeated?.Invoke();
     }
     public void FaceTarget()
@@ -150,5 +165,28 @@ public abstract class BossBase : MonoBehaviour, IDamageable, ILightReactable
     public virtual void StartEncounter()
     {
         IsEncounterActive = true;
+    }
+    public virtual void ResetBoss()
+    {
+        if (IsDead) return;
+
+        transform.position = initialSpawnPos;
+        Rb.linearVelocity = Vector2.zero;
+
+        currentHp = maxHp;
+        OnHealthChanged?.Invoke(currentHp, maxHp);
+
+        currentLightExposureTime = 0f;
+        isVulnerable = false;
+        isHitInvulnerable = false;
+        IsEncounterActive = false;
+        UpdateAgitationState(false);
+
+        if (!IsFacingRight) Flip();
+
+        if (DormantState != null)
+        {
+            StateMachine.ChangeState(DormantState);
+        }
     }
 }

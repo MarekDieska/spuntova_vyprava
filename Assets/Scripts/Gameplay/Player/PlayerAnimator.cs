@@ -6,6 +6,7 @@ public class PlayerAnimator : MonoBehaviour
     private Animator animator;
     private PlayerMovement playerMovement;
     private PlayerInput playerInput;
+    private PlayerHealth playerHealth;
     private ConeLightAbility coneLight;
     private MovableLightAbility movableLight;
     private static readonly int IsMovingHash = Animator.StringToHash("IsMoving");
@@ -18,6 +19,19 @@ public class PlayerAnimator : MonoBehaviour
         playerInput = GetComponentInParent<PlayerInput>();
         coneLight = GetComponentInParent<ConeLightAbility>();
         movableLight = GetComponentInParent<MovableLightAbility>();
+        playerHealth = GetComponentInParent<PlayerHealth>();
+    }
+    private void OnEnable()
+    {
+        playerHealth.OnDeathAction += TriggerDeath;
+    }
+    private void OnDisable()
+    {
+        playerHealth.OnDeathAction -= TriggerDeath;
+    }
+    private void TriggerDeath()
+    {
+        animator.SetTrigger("Death");
     }
 
     private void Update()
