@@ -152,6 +152,19 @@ public class PlayerMovement : MonoBehaviour
         ApplyLeftBoundary();
     }
 
+    public void Bounce(float height)
+    {
+        if (State != PlayerState.Normal)
+            return;
+
+        velocity = rb.linearVelocity - carriedVelocity;
+        Jump(height);
+        canCutJump = false;
+        airJumpsLeft = airJumps;
+        carriedVelocity = Vector2.zero;
+        rb.linearVelocity = velocity;
+    }
+
     void ApplyLeftBoundary()
     {
         if (float.IsNegativeInfinity(leftBoundary))

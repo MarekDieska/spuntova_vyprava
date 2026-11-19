@@ -55,6 +55,11 @@ public class CameraController2D : MonoBehaviour
     float shakeTime;
     Vector3 shakeOffset;
 
+    public BoxCollider2D LevelBounds => levelBounds;
+    public float SectionChangeProgress => transitionDuration > 0f
+        ? Mathf.SmoothStep(0f, 1f, Mathf.Clamp01(transitionTime / transitionDuration))
+        : 1f;
+
     void Reset() => target = FindAnyObjectByType<PlayerMovement>();
 
     void Awake()

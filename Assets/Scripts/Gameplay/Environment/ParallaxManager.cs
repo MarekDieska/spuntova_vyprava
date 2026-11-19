@@ -15,9 +15,13 @@ public class ParallaxManager : MonoBehaviour
         public float scale = 1f;
         public string sortingLayer = "Default";
         public int sortingOrder = -10;
+        public bool followDeathZone = false;
+        public float deathZoneOffset = 0f;
 
         [HideInInspector] public List<SpriteRenderer> renderers = new List<SpriteRenderer>();
         [HideInInspector] public float tileWidth;
+        [System.NonSerialized] public float currentY;
+        [System.NonSerialized] public float startY;
     }
 
     [SerializeField] Camera gameCamera;
@@ -25,6 +29,10 @@ public class ParallaxManager : MonoBehaviour
     [SerializeField] ParallaxLayer[] layers;
     float startCameraX;
     float startCameraY;
+    CameraController2D cameraController;
+    BoxCollider2D currentBounds;
+    bool hasDeathZone;
+    float deathZoneY;
 
     void Start()
     {
@@ -33,6 +41,7 @@ public class ParallaxManager : MonoBehaviour
             gameCamera = Camera.main;
         }
 
+        cameraController = gameCamera.GetComponent<CameraController2D>();
         startCameraX = gameCamera.transform.position.x;
         startCameraY = gameCamera.transform.position.y;
 
@@ -48,6 +57,8 @@ public class ParallaxManager : MonoBehaviour
             {
                 continue;
             }
+
+            layer.currentY = layer.y;
 
             float screenWidth = gameCamera.orthographicSize * 2f * gameCamera.aspect;
             int count = Mathf.CeilToInt(screenWidth / layer.tileWidth) + 3;
@@ -76,7 +87,38 @@ public class ParallaxManager : MonoBehaviour
 
     void LateUpdate()
     {
+        if (cameraController != null && cameraController.LevelBounds != currentBounds)
+        {
+            currentBounds = cameraController.LevelBounds;
+            hasDeathZone = FindDeathZoneY(currentBounds, out deathZoneY);
+
+            foreach (ParallaxLayer layer in layers)
+            {
+                layer.startY = layer.currentY;
+            }
+        }
+
         UpdateLayers();
+    }
+
+    bool FindDeathZoneY(BoxCollider2D bounds, out float top)
+    {
+        top = float.MinValue;
+        if (bounds == null || bounds.transform.parent == null)
+        {
+            return false;
+        }
+
+        foreach (DeathZone zone in bounds.transform.parent.GetComponentsInChildren<DeathZone>())
+        {
+            Collider2D zoneCollider = zone.GetComponent<Collider2D>();
+            if (zone.AlignForegroundThorns && zoneCollider != null)
+            {
+                top = Mathf.Max(top, zoneCollider.bounds.max.y);
+            }
+        }
+
+        return top > float.MinValue;
     }
 
     void UpdateLayers()
@@ -97,12 +139,24 @@ public class ParallaxManager : MonoBehaviour
             float anchorX = startCameraX + parallaxX;
             float relativeLeft = cameraX - halfWidth - anchorX;
             int firstTile = Mathf.FloorToInt(relativeLeft / layer.tileWidth) - 1;
+            float y = layer.y + parallaxY;
+
+            if (layer.followDeathZone)
+            {
+                float targetY = (hasDeathZone ? deathZoneY : layer.y) + layer.deathZoneOffset;
+                float progress = cameraController != null ? cameraController.SectionChangeProgress : 1f;
+                layer.currentY = Mathf.Lerp(layer.startY, targetY, progress);
+                if (progress >= 1f)
+                {
+                    layer.startY = targetY;
+                }
+                y = layer.currentY;
+            }
 
             for (int i = 0; i < layer.renderers.Count; i++)
             {
                 float pivotOffset = layer.sprite.pivot.x / layer.sprite.rect.width;
                 float x = anchorX + (firstTile + i + pivotOffset) * layer.tileWidth;
-                float y = layer.y + parallaxY;
                 layer.renderers[i].transform.position = new Vector3(x, y, layer.z);
             }
         }

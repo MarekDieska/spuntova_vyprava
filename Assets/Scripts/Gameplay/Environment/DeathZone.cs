@@ -6,6 +6,9 @@ public class DeathZone : MonoBehaviour
 
     [SerializeField] private int damageAmount = 1;
     [SerializeField] private AudioClip damageSound;
+    [SerializeField] private bool alignForegroundThorns = true;
+
+    public bool AlignForegroundThorns => alignForegroundThorns;
 
     private AudioSource damageAudio;
 
