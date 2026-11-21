@@ -81,7 +81,7 @@ public class PlayerMovement : MonoBehaviour
     bool canCutJump;
     bool dashPressed;
     bool canAirDash;
-    int airJumpsLeft;
+    public int AirJumpsLeft { get; set; }
     float leftBoundary = float.NegativeInfinity;
     float lastJumpPressedTime = float.NegativeInfinity;
     float lastGroundedTime = float.NegativeInfinity;
@@ -101,12 +101,15 @@ public class PlayerMovement : MonoBehaviour
     public bool IsDashing => Time.time < dashEndTime;
     public Vector2 Velocity => velocity;
 
+    public bool GrappleJump { get; set; } = false;
+
     public bool IsWalking =>
         isActiveAndEnabled && isGrounded && moveInput != 0f && State == PlayerState.Normal &&
         (rb.constraints & RigidbodyConstraints2D.FreezePositionX) == 0 &&
         Mathf.Abs(rb.linearVelocity.x - carriedVelocity.x) > WalkSpeedThreshold;
 
     int MaxAirJumps => PlayerAbilityManager.Instance.IsUnlocked(AbilityType.DoubleJump) ? airJumps : 0;
+    public int GetMaxAirJumps => MaxAirJumps;
     bool CanUseDash => PlayerAbilityManager.Instance.IsUnlocked(AbilityType.Dash);
     float Gravity => 2f * jumpHeight / (timeToApex * timeToApex);
 
@@ -124,7 +127,7 @@ public class PlayerMovement : MonoBehaviour
         rb.collisionDetectionMode = CollisionDetectionMode2D.Continuous;
         col.sharedMaterial = new PhysicsMaterial2D { friction = 0f };
 
-        airJumpsLeft = MaxAirJumps;
+        AirJumpsLeft = MaxAirJumps;
     }
 
     void Update()
@@ -135,7 +138,7 @@ public class PlayerMovement : MonoBehaviour
 
         if (input.JumpPressedThisFrame)
             lastJumpPressedTime = Time.time;
-        if (input.DashPressedThisFrame)
+        if (input.DashPressedThisFrame && State == PlayerState.Normal)
             dashPressed = true;
     }
 
@@ -155,6 +158,7 @@ public class PlayerMovement : MonoBehaviour
             {
                 Run();
                 StepOverBumps();
+                TryJump();
                 CutJumpIfReleased();
                 CorrectCorners();
             }
@@ -162,7 +166,7 @@ public class PlayerMovement : MonoBehaviour
 
         RestoreDroppedPlatforms();
         CheckSurroundings();
-        TryJump();
+        
         if (!IsDashing)
             ApplyGravity();
         fallSpeed = isGrounded ? 0f : Mathf.Max(0f, -velocity.y);
@@ -211,7 +215,7 @@ public class PlayerMovement : MonoBehaviour
         velocity = rb.linearVelocity - carriedVelocity;
         Jump(height);
         canCutJump = false;
-        airJumpsLeft = airJumps;
+        AirJumpsLeft = airJumps;
         carriedVelocity = Vector2.zero;
         rb.linearVelocity = velocity;
     }
@@ -266,12 +270,9 @@ public class PlayerMovement : MonoBehaviour
         int wall = isGrounded ? 0 : WallSide(ContactDistance);
         isWallSliding = !IsDashing && wall != 0 && moveInput == wall && velocity.y <= 0f;
 
-        if (State == PlayerState.Grappled)
-            isGrounded = true;
-
         if (isGrounded || isWallSliding)
         {
-            airJumpsLeft = MaxAirJumps;
+            AirJumpsLeft = MaxAirJumps;
             canAirDash = true;
         }
     }
@@ -401,10 +402,11 @@ public class PlayerMovement : MonoBehaviour
         if (Time.time - lastJumpPressedTime > jumpBufferTime)
             return;
 
-        if (Time.time - lastGroundedTime <= coyoteTime || State == PlayerState.Grappled)
+        if (Time.time - lastGroundedTime <= coyoteTime || GrappleJump)
         {
             dashEndTime = float.NegativeInfinity;
             Jump(jumpHeight);
+            GrappleJump = false;
             return;
         }
 
@@ -414,10 +416,10 @@ public class PlayerMovement : MonoBehaviour
             dashEndTime = float.NegativeInfinity;
             WallJump(wall);
         }
-        else if (airJumpsLeft > 0)
+        else if (AirJumpsLeft > 0)
         {
             dashEndTime = float.NegativeInfinity;
-            airJumpsLeft--;
+            AirJumpsLeft--;
             Jump(airJumpHeight);
         }
     }
@@ -437,7 +439,7 @@ public class PlayerMovement : MonoBehaviour
     {
         velocity.x = -wallSide * wallJumpPushSpeed;
         wallJumpTime = Time.time;
-        airJumpsLeft = MaxAirJumps;
+        AirJumpsLeft = MaxAirJumps;
         canAirDash = true;
         Jump(jumpHeight);
     }

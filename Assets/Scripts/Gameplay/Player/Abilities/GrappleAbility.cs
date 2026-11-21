@@ -11,7 +11,7 @@ public class GrappleAbility : MonoBehaviour
     [Header("Swinging")]
     [SerializeField] float swingForce = 25f;
     [SerializeField] float maxSwingSpeed = 12f;
-    [SerializeField] float releaseBoost = 1.1f;
+    [SerializeField] float releaseBoost = 0.0f;
     [SerializeField] float swingDamping = 2f;
     float normalDamping;
 
@@ -149,5 +149,7 @@ public class GrappleAbility : MonoBehaviour
 
         rb.linearDamping = normalDamping;
         movement.State = PlayerMovement.PlayerState.Normal;
+        movement.GrappleJump = true;
+        movement.AirJumpsLeft = movement.GetMaxAirJumps;
     }
 }
