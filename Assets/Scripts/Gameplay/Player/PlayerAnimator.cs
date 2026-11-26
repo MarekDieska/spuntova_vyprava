@@ -3,6 +3,8 @@ using UnityEngine;
 [RequireComponent(typeof(Animator))]
 public class PlayerAnimator : MonoBehaviour
 {
+    [SerializeField] private Sprite wallSlideSprite;
+    private SpriteRenderer spriteRenderer;
     private Animator animator;
     private PlayerMovement playerMovement;
     private PlayerInput playerInput;
@@ -15,6 +17,7 @@ public class PlayerAnimator : MonoBehaviour
     private void Awake()
     {
         animator = GetComponent<Animator>();
+        spriteRenderer = GetComponent<SpriteRenderer>();
         playerMovement = GetComponentInParent<PlayerMovement>();
         playerInput = GetComponentInParent<PlayerInput>();
         coneLight = GetComponentInParent<ConeLightAbility>();
@@ -41,6 +44,13 @@ public class PlayerAnimator : MonoBehaviour
 
     private void LateUpdate()
     {
+        if (wallSlideSprite != null && playerMovement.IsWallSliding)
+        {
+            spriteRenderer.sprite = wallSlideSprite;
+            SetFacingDirection(-Mathf.Sign(playerMovement.MoveInput));
+            return;
+        }
+
         HandleVisualFlipping();
     }
 

@@ -74,4 +74,14 @@ public class BreakablePlatform : MonoBehaviour
             rend.enabled = visible;
         }
     }
+
+    public void ResetPlatform()
+    {
+        if (!isBreaking) return;
+
+        StopAllCoroutines();
+        isBreaking = false;
+        gameObject.SetActive(true);
+        SetPlatformVisible(true);
+    }
 }

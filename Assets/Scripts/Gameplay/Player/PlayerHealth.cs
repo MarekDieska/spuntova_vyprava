@@ -68,6 +68,7 @@ public class PlayerHealth : MonoBehaviour, IDamageable
     public void Respawn()
     {
         transform.position = currentRespawnPosition;
+        ResetRespawnObjects();
         if (cameraController != null)
         {
             cameraController.RespawnTransition();
@@ -80,11 +81,27 @@ public class PlayerHealth : MonoBehaviour, IDamageable
         OnHealthChangedAction?.Invoke(currentHp, maxHp, 0);
 
         transform.position = currentRespawnPosition;
+        ResetRespawnObjects();
         SetPlayerControlEnabled(true);
 
         if (cameraController != null)
         {
             cameraController.RespawnTransition();
+        }
+    }
+
+    private void ResetRespawnObjects()
+    {
+        foreach (var charger in FindObjectsByType<TemporalLightCharger>(
+            FindObjectsInactive.Include, FindObjectsSortMode.None))
+        {
+            charger.ResetCharger();
+        }
+
+        foreach (var platform in FindObjectsByType<BreakablePlatform>(
+            FindObjectsInactive.Include, FindObjectsSortMode.None))
+        {
+            platform.ResetPlatform();
         }
     }
 
