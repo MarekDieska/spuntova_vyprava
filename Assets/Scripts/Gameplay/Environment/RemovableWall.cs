@@ -1,10 +1,10 @@
 using UnityEngine;
-using UnityEngine.Tilemaps;
 
-// Put on a RemovableWall tilemap that a flower toggles via GameObject.SetActive.
+// Put on a RemovableWall object with a SpriteRenderer and a Collider2D
+// that a flower toggles via GameObject.SetActive.
 // If the wall turns back on while the player is inside it, it either stays
 // non-solid (ghost) until the player leaves, or damages and respawns the player.
-[RequireComponent(typeof(Tilemap))]
+[RequireComponent(typeof(SpriteRenderer), typeof(Collider2D))]
 public class RemovableWall : MonoBehaviour
 {
     private enum PlayerInsideMode { WaitUntilClear, DamageAndRespawn }
@@ -13,8 +13,8 @@ public class RemovableWall : MonoBehaviour
     [SerializeField] private int damageAmount = 1;
     [SerializeField, Range(0f, 1f)] private float ghostAlpha = 0.4f;
 
-    private Tilemap tilemap;
-    private Collider2D[] colliders;
+    private SpriteRenderer spriteRenderer;
+    private Collider2D wallCollider;
     private Color originalColor;
     private PlayerHealth player;
     private BoxCollider2D playerCollider;
@@ -22,9 +22,9 @@ public class RemovableWall : MonoBehaviour
 
     private void Awake()
     {
-        tilemap = GetComponent<Tilemap>();
-        colliders = GetComponents<Collider2D>();
-        originalColor = tilemap.color;
+        spriteRenderer = GetComponent<SpriteRenderer>();
+        wallCollider = GetComponent<Collider2D>();
+        originalColor = spriteRenderer.color;
     }
 
     private void OnEnable()
@@ -56,13 +56,11 @@ public class RemovableWall : MonoBehaviour
     private void SetSolid(bool solid)
     {
         waitingForPlayer = !solid;
-
-        foreach (Collider2D col in colliders)
-            col.enabled = solid;
+        wallCollider.enabled = solid;
 
         Color color = originalColor;
         if (!solid) color.a *= ghostAlpha;
-        tilemap.color = color;
+        spriteRenderer.color = color;
     }
 
     private bool PlayerInside()
@@ -76,19 +74,18 @@ public class RemovableWall : MonoBehaviour
         }
 
         // Shrink a bit so just touching the wall's edge doesn't count as inside.
-        Bounds bounds = playerCollider.bounds;
-        bounds.Expand(-0.05f);
+        Bounds playerBounds = playerCollider.bounds;
+        playerBounds.Expand(-0.05f);
 
-        Vector3Int min = tilemap.WorldToCell(bounds.min);
-        Vector3Int max = tilemap.WorldToCell(bounds.max);
-        for (int x = min.x; x <= max.x; x++)
-        {
-            for (int y = min.y; y <= max.y; y++)
-            {
-                if (tilemap.HasTile(new Vector3Int(x, y, 0)))
-                    return true;
-            }
-        }
-        return false;
+        // Disabled colliders report zero-size bounds in Unity,
+        // so briefly enable to read accurate world bounds.
+        bool wasEnabled = wallCollider.enabled;
+        if (!wasEnabled) wallCollider.enabled = true;
+
+        bool overlaps = wallCollider.bounds.Intersects(playerBounds);
+
+        if (!wasEnabled) wallCollider.enabled = false;
+
+        return overlaps;
     }
 }
