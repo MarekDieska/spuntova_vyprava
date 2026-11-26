@@ -1,6 +1,7 @@
 using System;
 using UnityEngine;
 
+[DefaultExecutionOrder(-100)]
 public class PlayerAbilityManager : MonoBehaviour
 {
     public static PlayerAbilityManager Instance { get; private set; }
