@@ -3,30 +3,30 @@ using UnityEngine;
 public class MantisBoss : BossBase
 {
     [Header("Default Variables")]
-    [SerializeField] private float leapAttackChance = 0.65f;
-    [SerializeField] private float swipeAttackChance = 0.65f;
+    [SerializeField] private float leapAttackChance = 0.6f;
+    [SerializeField] private float swipeAttackChance = 0.7f;
     [SerializeField] private float decisionCooldown = 0.5f;
     [SerializeField] private float agitatedSpeedMultiplier = 1.6f;
     [Header("Swipe State")]
     [SerializeField] private float maxSwipeHeightDifference = 1.5f;
     [SerializeField] private float swipeTriggerRange = 4.5f;
-    [SerializeField] private float swipeChargeTime = 0.5f;
+    [SerializeField] private float swipeChargeTime = 0.25f;
     [SerializeField] private float timeBetweenSwipes = 0.125f;
-    [SerializeField] private float swipeLungeSpeed = 4.5f;
+    [SerializeField] private float swipeLungeSpeed = 6.5f;
     [SerializeField] private int swipeCount = 4;
     [SerializeField] private GameObject swipeHitbox;
     [Header("Leap State")]
-    [SerializeField] private float leapChargeTime = 0.5f;
+    [SerializeField] private float leapChargeTime = 0.35f;
     [SerializeField] private float leapHorizontalForce = 12f;
     [SerializeField] private float leapVerticalForce = 14f;
     [SerializeField] private float agitatedLeapMultiplier = 1.45f;
     [SerializeField] private float dashLeapDistance = 8.5f;
     [SerializeField] private float dashLeapSpeed = 19f;
     [Header("Leaf Throw State")]
-    [SerializeField] private float leafChargeTime = 0.5f;
+    [SerializeField] private float leafChargeTime = 0.2f;
     [SerializeField] private GameObject leafProjectilePrefab;
     [SerializeField] private Transform firePoint;
-    [SerializeField] private int leafBurstCount = 2;
+    [SerializeField] private int leafBurstCount = 3;
     [SerializeField] private float timeBetweenLeaves = 0.2f;
     [Header("Ground Check")]
     [SerializeField] private Transform groundCheck;

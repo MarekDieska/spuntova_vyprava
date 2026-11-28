@@ -29,8 +29,8 @@ public class LeafProjectile : MonoBehaviour
         if (other.TryGetComponent(out IDamageable damageable))
         {
             damageable.TakeDamage(damage);
+            Destroy(gameObject);
         }
 
-        Destroy(gameObject);
     }
 }
