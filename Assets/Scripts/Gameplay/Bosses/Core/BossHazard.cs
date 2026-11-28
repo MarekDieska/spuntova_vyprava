@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Events;
 
 [RequireComponent(typeof(Collider2D))]
 public class BossHazard : MonoBehaviour
@@ -12,20 +13,21 @@ public class BossHazard : MonoBehaviour
     [SerializeField] private int damageAmount = 1;
     [SerializeField] private bool autoReform = false;
     [SerializeField] private float reformDelay = 5f;
-    [SerializeField] private TemporalLightCharger lightCharger;
+    [SerializeField] private UnityEvent<bool> OnHazardAvailableLevelEvent;
 
     public float ReformDelay => reformDelay;
     public bool IsActive { get; private set; }
     public bool IsSpent { get; private set; }
 
     private Collider2D hazardCollider;
+    private TemporalLightCharger lightCharger;
 
     private void Awake()
     {
         hazardCollider = GetComponent<Collider2D>();
         hazardCollider.isTrigger = true;
 
-        if (lightCharger == null) lightCharger = GetComponent<TemporalLightCharger>();
+        lightCharger = GetComponent<TemporalLightCharger>();
         IsActive = false;
         IsSpent = false;
     }
@@ -75,6 +77,7 @@ public class BossHazard : MonoBehaviour
             lightCharger.ResetCharger();
             hazardCollider.enabled = false;
             OnBossHit?.Invoke();
+            OnHazardAvailableLevelEvent?.Invoke(false);
             if (autoReform)
             {
                 StartCoroutine(AutoReformRoutine());
@@ -96,5 +99,6 @@ public class BossHazard : MonoBehaviour
         hazardCollider.enabled = true;
 
         OnHazardReformed?.Invoke();
+        OnHazardAvailableLevelEvent?.Invoke(true);
     }
 }

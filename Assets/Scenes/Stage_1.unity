@@ -7682,18 +7682,6 @@ PrefabInstance:
       propertyPath: m_Name
       value: MantisBoss
       objectReference: {fileID: 0}
-    - target: {fileID: 5056649831248509012, guid: cbfb5fbdc5704374aaaf1696ae790b3b, type: 3}
-      propertyPath: leafChargeTime
-      value: 0.2
-      objectReference: {fileID: 0}
-    - target: {fileID: 5056649831248509012, guid: cbfb5fbdc5704374aaaf1696ae790b3b, type: 3}
-      propertyPath: leapChargeTime
-      value: 0.35
-      objectReference: {fileID: 0}
-    - target: {fileID: 5056649831248509012, guid: cbfb5fbdc5704374aaaf1696ae790b3b, type: 3}
-      propertyPath: swipeChargeTime
-      value: 0.25
-      objectReference: {fileID: 0}
     - target: {fileID: 5117416910091161172, guid: cbfb5fbdc5704374aaaf1696ae790b3b, type: 3}
       propertyPath: m_LocalPosition.x
       value: 285.33
@@ -125256,7 +125244,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!114 &2005082076
 MonoBehaviour:
   m_ObjectHideFlags: 0
