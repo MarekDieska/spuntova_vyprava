@@ -81,6 +81,7 @@ public class PlayerMovement : MonoBehaviour
     bool canCutJump;
     bool dashPressed;
     bool canAirDash;
+    bool controlsLocked;
     public int AirJumpsLeft { get; set; }
     float leftBoundary = float.NegativeInfinity;
     float lastJumpPressedTime = float.NegativeInfinity;
@@ -110,7 +111,6 @@ public class PlayerMovement : MonoBehaviour
 
     int MaxAirJumps => PlayerAbilityManager.Instance.IsUnlocked(AbilityType.DoubleJump) ? airJumps : 0;
     public int GetMaxAirJumps => MaxAirJumps;
-    bool CanUseDash => PlayerAbilityManager.Instance.IsUnlocked(AbilityType.Dash);
     float Gravity => 2f * jumpHeight / (timeToApex * timeToApex);
 
     void Reset() => groundLayer = LayerMask.GetMask("Ground");
@@ -132,6 +132,7 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
+        if (controlsLocked) return;
         moveInput = Mathf.Abs(input.MoveInput) < StickDeadZone ? 0f : Mathf.Sign(input.MoveInput);
         jumpHeld = input.JumpHeld;
         dropHeld = input.VerticalInput < -DropInputThreshold;
@@ -144,6 +145,7 @@ public class PlayerMovement : MonoBehaviour
 
     void FixedUpdate()
     {
+        if (controlsLocked) return;
         velocity = rb.linearVelocity - carriedVelocity;
 
         if (State == PlayerState.Normal)
@@ -166,7 +168,7 @@ public class PlayerMovement : MonoBehaviour
 
         RestoreDroppedPlatforms();
         CheckSurroundings();
-        
+
         if (!IsDashing)
             ApplyGravity();
         fallSpeed = isGrounded ? 0f : Mathf.Max(0f, -velocity.y);
@@ -174,6 +176,20 @@ public class PlayerMovement : MonoBehaviour
         carriedVelocity = isGrounded ? groundVelocity : Vector2.zero;
         rb.linearVelocity = velocity + carriedVelocity;
         ApplyLeftBoundary();
+    }
+    public void SetControlEnabled(bool controlEnabled)
+    {
+        controlsLocked = !controlEnabled;
+        input.enabled = controlEnabled;
+
+        if (!controlEnabled)
+        {
+            moveInput = 0f;
+            dashPressed = false;
+            dashEndTime = float.NegativeInfinity;
+            rb.linearVelocity = Vector2.zero;
+        }
+        this.enabled = controlEnabled;
     }
     void TryDash()
     {

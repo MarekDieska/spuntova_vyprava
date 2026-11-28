@@ -10,8 +10,7 @@ public class AbilityUnlockUI : MonoBehaviour
     [SerializeField] private TMP_Text abilityDescriptionText;
     [SerializeField] private Button continueButton;
 
-    [Header("Optional Player Freeze")]
-    [SerializeField] private PlayerInput playerInput;
+    [Header("Player References")]
     [SerializeField] private PlayerMovement playerMovement;
 
     private bool isSubscribed = false;
@@ -62,7 +61,10 @@ public class AbilityUnlockUI : MonoBehaviour
         if (abilityDescriptionText != null)
             abilityDescriptionText.text = description;
 
-        SetPlayerControlEnabled(false);
+        if (playerMovement != null)
+        {
+            playerMovement.SetControlEnabled(false);
+        }
 
         if (unlockPanel != null)
             unlockPanel.SetActive(true);
@@ -73,14 +75,12 @@ public class AbilityUnlockUI : MonoBehaviour
         if (unlockPanel != null)
             unlockPanel.SetActive(false);
 
-        SetPlayerControlEnabled(true);
+        if (playerMovement != null)
+        {
+            playerMovement.SetControlEnabled(true);
+        }
     }
 
-    private void SetPlayerControlEnabled(bool enabled)
-    {
-        if (playerInput != null) playerInput.enabled = enabled;
-        if (playerMovement != null) playerMovement.enabled = enabled;
-    }
 
     private void BuildDisplayText(AbilityType abilities, out string description)
     {
