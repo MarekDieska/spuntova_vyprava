@@ -15,7 +15,7 @@ GameObject:
   - component: {fileID: 3997658002763446981}
   - component: {fileID: 644015891892649118}
   m_Layer: 0
-  m_Name: thorns
+  m_Name: ThornsDissolvePuzzle
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -31,7 +31,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 0.55, y: 0.62, z: 1}
+  m_LocalScale: {x: 0.16, y: 0.16, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -85,8 +85,8 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 21300000, guid: 5ac3d6d10414906428b784f20c7f78bf, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Sprite: {fileID: 5555539270824955543, guid: 9b77fdc7d1a7fcb4883fe32e98c4fc20, type: 3}
+  m_Color: {r: 0, g: 1, b: 0.0009315014, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -129,17 +129,17 @@ BoxCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: -0.16520691, y: -0.17838061}
+  m_Offset: {x: 0.02799797, y: 0.16440201}
   m_SpriteTilingProperty:
     border: {x: 0, y: 0, z: 0, w: 0}
     pivot: {x: 0.5, y: 0.5}
-    oldSize: {x: 4.344, y: 1.448707}
+    oldSize: {x: 16.8, y: 6.1}
     newSize: {x: 4.344, y: 1.448707}
     adaptiveTilingThreshold: 0.5
     drawMode: 0
     adaptiveTiling: 0
   m_AutoTiling: 0
-  m_Size: {x: 4.013586, y: 0.8115829}
+  m_Size: {x: 16.893902, y: 5.439146}
   m_EdgeRadius: 0
 --- !u!114 &6613234257777050120
 MonoBehaviour:
@@ -201,4 +201,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::DeathZone
   damageAmount: 1
   damageSound: {fileID: 8300000, guid: 1b87164eb0c50d44197c7e5f575d5aa9, type: 3}
+  shouldRespawn: 1
   alignForegroundThorns: 0
